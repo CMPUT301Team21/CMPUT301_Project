@@ -1,4 +1,4 @@
-package com.example.cmput301f22t21_project;
+package com.example.myhw;
 
 import org.junit.Test;
 

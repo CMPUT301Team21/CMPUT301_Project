@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">CMPUT301F22T21_Project</string>
+    <string name="app_name">MyHW</string>
+    <string-array name="orderBy">
+        <item>description</item>
+        <item>category</item>
+    </string-array>
 </resources>
