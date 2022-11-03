@@ -16,9 +16,6 @@
         android:theme="@style/Theme.MyHW"
         tools:targetApi="31">
         <activity
-            android:name=".SelectRecipeActivity"
-            android:exported="false" />
-        <activity
             android:name=".recipes.RecipesDetailActivity"
             android:exported="false" />
         <activity

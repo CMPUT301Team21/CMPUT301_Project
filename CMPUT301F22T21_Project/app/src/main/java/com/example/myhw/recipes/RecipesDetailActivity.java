@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.myhw.FirebaseUtil;
@@ -50,7 +51,12 @@ public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDe
 
     @Override
     protected void initListener() {
-
+        viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     Recipes recipes;
@@ -63,10 +69,10 @@ public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDe
         adapter.getData().addAll(recipes.ingredients);
         adapter.getData().add(0, new AnotherIngredient());
         viewBinder.rvIngredient.setAdapter(adapter);
-        viewBinder.tvCategory.setText("Title:" + recipes.title);
-        viewBinder.tvCategory.setText("Preparation time:" + recipes.preparationTime);
-        viewBinder.tvCategory.setText("Number of serving:" + recipes.numberOfServings);
-        viewBinder.tvCategory.setText("Common:" + recipes.comments);
+        viewBinder.tvTitle.setText("Title:" + recipes.title);
+        viewBinder.tvPreparationTime.setText("Preparation time:" + recipes.preparationTime);
+        viewBinder.tvNumber.setText("Number of serving:" + recipes.numberOfServings);
+        viewBinder.tvComments.setText("Common:" + recipes.comments);
         viewBinder.tvCategory.setText("Recipe category:" + recipes.category);
         FirebaseUtil.loadImage(recipes.photo, viewBinder.ivImage);
     }

@@ -3,13 +3,16 @@ package com.example.myhw.Ingredient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myhw.MainViewModel;
+import com.example.myhw.R;
 import com.example.myhw.base.BaseBindingFragment;
 import com.example.myhw.base.BindAdapter;
 import com.example.myhw.databinding.FragmentIngredientBinding;
@@ -72,12 +75,14 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId()== R.id.menu_add_ingredient){
+            startActivity(AddIngredientActivity.class);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void initListener() {
-        viewBinder.ivAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(AddIngredientActivity.class);
-            }
-        });
     }
 }

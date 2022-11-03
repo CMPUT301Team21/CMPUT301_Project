@@ -44,7 +44,12 @@ public class SelectIngredientActivity extends BaseBindingActivity<ActivitySelect
 
     @Override
     protected void initListener() {
-
+        viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private MainViewModel viewModel;

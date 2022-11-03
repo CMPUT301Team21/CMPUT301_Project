@@ -20,6 +20,7 @@ import java.util.List;
 
 public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
     private List<Fragment> fragments = new ArrayList<>();
+
     //仓库:
     @Override
     protected void initListener() {
@@ -40,24 +41,26 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
         viewBinder.bnv.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                menu.clear();
                 switch (item.getItemId()) {
                     case R.id.ingredient:
                         currentPage = 0;
+                        getMenuInflater().inflate(R.menu.menu_ingredient, menu);
                         break;
                     case R.id.shoppingList:
                         currentPage = 1;
+                        getMenuInflater().inflate(R.menu.menu_shopping, menu);
                         break;
                     case R.id.recipes:
                         currentPage = 2;
+                        getMenuInflater().inflate(R.menu.menu_recipes, menu);
                         break;
                     case R.id.mealPlan:
+                        getMenuInflater().inflate(R.menu.menu_plan, menu);
                         currentPage = 3;
                         break;
                 }
-                menu.clear();
-                if (currentPage == 2) {
-                    getMenuInflater().inflate(R.menu.menu_recipes, menu);
-                }
+
                 changeFragment(fragments.get(currentPage));
                 return true;
             }
@@ -72,7 +75,10 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return fragments.get(2).onOptionsItemSelected(item);
+        for (Fragment fragment : fragments) {
+            fragment.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void changeFragment(Fragment fragment) {

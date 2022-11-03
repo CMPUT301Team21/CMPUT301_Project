@@ -23,6 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+
+//9.每一次点到 shopping list，比较meal plan和storage 数量上的差值，meal plan 里的东西如果storage 没有就把它加到shopping list 更新shopping list
+//10. recepie 添加食物的时候，要现场添加新的事物信息（escription amount unit ingredient category）而不是跑到 ingredient storage
+
+
 public class MainViewModel extends ViewModel {
     private MutableLiveData<List<Ingredient>> ingredients = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<List<Recipes>> recipes = new MutableLiveData<>(new ArrayList<>());
@@ -197,7 +202,15 @@ public class MainViewModel extends ViewModel {
                 });
     }
 
-    public void changeChount(List<AnotherIngredient> recipesIngredients) {
+    public void changeCount(List<AnotherIngredient> recipesIngredients) {
+//        for (计划 计划item: 计划List){
+//            for (食物 食物item: 计划Item.食物List){
+//                for (食物 仓库食物Item:仓库List){
+//
+//                }
+//            }
+//        }
+
         List<Ingredient> value = ingredients.getValue();
         for (Ingredient ingredient : value) {
             for (AnotherIngredient recipesIngredient : recipesIngredients) {
