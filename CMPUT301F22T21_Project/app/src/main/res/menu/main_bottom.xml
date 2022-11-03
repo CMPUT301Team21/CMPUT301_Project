@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/ingredient"
+        android:title="Ingredient Storage" />
+    <item
+        android:id="@+id/shoppingList"
+        android:title="Shopping List" />
+    <item
+        android:id="@+id/recipes"
+        android:title="Recipes" />
+    <item
+        android:id="@+id/mealPlan"
+        android:title="Meal Plan" />
+
+
+</menu>
