@@ -42,6 +42,7 @@
             <EditText
                 android:id="@+id/et_number"
                 android:layout_width="match_parent"
+                android:inputType="number"
                 android:layout_height="wrap_content"
                 android:hint="Number Of Servings" />
 

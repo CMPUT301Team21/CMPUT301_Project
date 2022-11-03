@@ -1,13 +1,17 @@
 package com.example.myhw;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -33,11 +37,15 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
         @Override
         public void bind(ItemIngredientBinding itemIngredientBinding, Ingredient ingredient, int position) {
             itemIngredientBinding.tvCategory.setText("Category:" + ingredient.category);
-            itemIngredientBinding.tvBastBeforeDate.setText("Bast Before Date:" + ingredient.time);
+
             itemIngredientBinding.tvCount.setText("Count:" + (Math.abs(ingredient.count)));
             itemIngredientBinding.tvUnitCost.setText("Unit:" + ingredient.unit);
-            itemIngredientBinding.tvLocation.setText("Location:" + ingredient.location);
+
             itemIngredientBinding.tvDescription.setText("Description:" + ingredient.description);
+            itemIngredientBinding.tvLocation.setText("Location:" + ingredient.location);
+            itemIngredientBinding.tvLocation.setVisibility(View.GONE);
+            itemIngredientBinding.tvBastBeforeDate.setText("Bast Before Date:" + ingredient.time);
+            itemIngredientBinding.tvBastBeforeDate.setVisibility(View.GONE);
             if (currentIndex == position) {
                 itemIngredientBinding.getRoot().setBackgroundColor(Color.GRAY);
             } else {
@@ -46,9 +54,9 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
             itemIngredientBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (position==currentIndex){
-                        currentIndex=-1;
-                    }else {
+                    if (position == currentIndex) {
+                        currentIndex = -1;
+                    } else {
                         currentIndex = position;
                     }
                     adapter.notifyDataSetChanged();
@@ -61,17 +69,6 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
     protected void initData() {
         viewBinder.rvData.setAdapter(adapter);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        viewBinder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    viewModel.changeShoppingListOrderBy(((TextView)view).getText().toString());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
     @Override
@@ -85,16 +82,36 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
                 adapter.notifyDataSetChanged();
             }
         });
-        viewBinder.btnAddToStorage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentIndex == -1) return;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_shopping:
+                if (currentIndex == -1) {
+                    break;
+                }
                 startActivity(new Intent(getActivity(), AddIngredientActivity.class)
                         .putExtra("ingredient", adapter.getData().get(currentIndex))
                         .putExtra("type", 1)
                 );
+                break;
+
+            case R.id.menu_sort_shopping: {
+                showShoppingListSort();
             }
-        });
+            break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
+    private void showShoppingListSort() {
+        String[] items = getResources().getStringArray(R.array.orderBy);
+        new AlertDialog.Builder(requireActivity()).setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                viewModel.changeShoppingListOrderBy(items[which]);
+            }
+        }).show();
+    }
 }

@@ -32,9 +32,9 @@ public class SelectRecipeActivity extends BaseBindingActivity<ActivitySelectReci
             itemSelectRecipesBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setResult(RESULT_OK,new Intent()
+                    setResult(RESULT_OK, new Intent()
                             .putExtra("ingredients", (Serializable) recipes.ingredients)
-                            .putExtra("number",recipes.numberOfServings)
+                            .putExtra("number", recipes.numberOfServings)
                     );
                     finish();
                 }
@@ -44,6 +44,13 @@ public class SelectRecipeActivity extends BaseBindingActivity<ActivitySelectReci
 
     @Override
     protected void initListener() {
+        viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         viewModel.observerRecipes().observe(this, new Observer<List<Recipes>>() {
             @Override
             public void onChanged(List<Recipes> recipes) {
