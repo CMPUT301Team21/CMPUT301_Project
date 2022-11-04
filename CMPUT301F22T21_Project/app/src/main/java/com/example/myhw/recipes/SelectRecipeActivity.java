@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myhw.FirebaseUtil;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.MainViewModel;
 import com.example.myhw.base.BaseBindingActivity;
 import com.example.myhw.base.BindAdapter;

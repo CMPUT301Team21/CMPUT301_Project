@@ -8,7 +8,7 @@ import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 
-import com.example.myhw.FirebaseUtil;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.base.BaseBindingActivity;
 import com.example.myhw.databinding.ActivityAddIngredientBinding;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,12 +25,7 @@ public class AddIngredientActivity extends BaseBindingActivity<ActivityAddIngred
 
     @Override
     protected void initListener() {
-        viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        viewBinder.btnBack.setOnClickListener(v -> finish());
         viewBinder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

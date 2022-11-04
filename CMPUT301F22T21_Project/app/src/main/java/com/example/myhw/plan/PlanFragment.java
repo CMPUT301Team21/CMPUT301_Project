@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.myhw.Ingredient.AddIngredientActivity;
 import com.example.myhw.Ingredient.Ingredient;
 import com.example.myhw.Ingredient.SelectIngredientActivity;
 import com.example.myhw.MainViewModel;
@@ -82,15 +83,9 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
 
     @Override
     protected void initListener() {
+        viewBinder.add.setOnClickListener(v -> showAddFunctionDialog());
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menu_add_plan) {
-            showAddFunctionDialog();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private void showAddFunctionDialog() {
         new AlertDialog.Builder(requireActivity()).setItems(
@@ -132,13 +127,11 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                     Ingredient ingredient = (Ingredient) data.getSerializableExtra("ingredient");
                     if (currentPlanIndex == -1) {
                         showAdd2PlanDialog(count -> {
-                            viewModel.changeCount(ingredient.id, count);
                             viewModel.addPlan(ingredient, count);
                         });
                     } else {
                         showAdd2PlanDialog(count -> {
                             Plan plan = adapter.getData().get(currentPlanIndex);
-                            viewModel.changeCount(ingredient.id, count);
                             viewModel.updatePlan(ingredient, plan, count);
                         });
                     }
@@ -152,7 +145,6 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                             for (AnotherIngredient item : ingredients) {
                                 item.count = item.count * number * count;
                             }
-                            viewModel.changeCount(ingredients);
                             if (currentPlanIndex == -1) {
                                 Plan plan = new Plan();
                                 plan.list = new ArrayList<>();

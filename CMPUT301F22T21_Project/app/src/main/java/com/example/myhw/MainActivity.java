@@ -36,8 +36,8 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
         fragments.add(new ShoppingListFragment());
         fragments.add(new RecipesFragment());
         fragments.add(new PlanFragment());
-
         changeFragment(fragments.get(currentPage));
+        viewBinder.bnv.setItemIconTintList(null);
         viewBinder.bnv.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -82,6 +82,7 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
     }
 
     private void changeFragment(Fragment fragment) {
+
         FragmentManager supportFragmentManager = getSupportFragmentManager();
 
         FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();

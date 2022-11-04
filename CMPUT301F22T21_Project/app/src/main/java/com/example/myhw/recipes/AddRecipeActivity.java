@@ -12,9 +12,10 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.myhw.FirebaseUtil;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.Ingredient.Ingredient;
 import com.example.myhw.Ingredient.SelectIngredientActivity;
 import com.example.myhw.R;
@@ -26,18 +27,16 @@ import com.example.myhw.plan.AnotherIngredient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.FileNotFoundException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBinding> {
     private String imageDocId = "";
+
     private BindAdapter<ItemRecipeIngredientBinding, AnotherIngredient> adapter = new BindAdapter<ItemRecipeIngredientBinding, AnotherIngredient>() {
         @Override
         public ItemRecipeIngredientBinding createHolder(ViewGroup parent) {
@@ -154,6 +153,32 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
             adapter.notifyDataSetChanged();
             viewBinder.btnDelete.setVisibility(View.VISIBLE);
         }
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                int swipeFlags = ItemTouchHelper.LEFT;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                new AlertDialog.Builder(AddRecipeActivity.this)
+                        .setTitle("Notice")
+                        .setMessage("Are you sure you want to delete this data")
+                        .setNegativeButton("SURE", (dialog, which) -> {
+                            adapter.getData().remove(viewHolder.getAdapterPosition());
+                            adapter.notifyDataSetChanged();
+                        }).setCancelable(false)
+                        .setPositiveButton("CANCEL", (dialog, which) -> adapter.notifyDataSetChanged()).show();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(viewBinder.rvIngredient);
     }
 
     @Override

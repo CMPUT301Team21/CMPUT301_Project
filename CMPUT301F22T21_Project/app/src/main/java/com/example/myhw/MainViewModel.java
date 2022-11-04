@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.myhw.Ingredient.Ingredient;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.plan.AnotherIngredient;
 import com.example.myhw.plan.Plan;
 import com.example.myhw.recipes.Recipes;
@@ -20,8 +21,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 
 //9.每一次点到 shopping list，比较meal plan和storage 数量上的差值，meal plan 里的东西如果storage 没有就把它加到shopping list 更新shopping list
@@ -94,6 +98,7 @@ public class MainViewModel extends ViewModel {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<Plan> preData = new ArrayList<>();
+                List<Ingredient> shoppingListPreDate = new ArrayList<>();
                 Log.d("TAG", "getPlanCollection->: onSuccess");
                 List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
                 for (DocumentSnapshot document : documents) {
@@ -102,8 +107,78 @@ public class MainViewModel extends ViewModel {
                     preData.add(plan);
                 }
                 plans.setValue(preData);
+                List<Ingredient> ingredientsValue = ingredients.getValue();
+                Map<String, Integer> countMap = new HashMap<>();
+                for (Plan plan : preData) {
+                    for (AnotherIngredient anotherIngredient : plan.list) {
+                        Integer integer = countMap.get(anotherIngredient.ingredientId);
+                        if (integer == null) {
+                            integer = 0;
+                        }
+                        integer += anotherIngredient.count;
+                        countMap.put(anotherIngredient.ingredientId, integer);
+                    }
+                }
+                for (Ingredient preDatum : ingredientsValue) {
+                    Integer integer = countMap.get(preDatum.id);
+                    if (integer != null && (integer > preDatum.count)) {
+                        preDatum.count = Math.abs(integer - preDatum.count);
+                        shoppingListPreDate.add(preDatum);
+                    }
+                }
+                shoppingList.setValue(shoppingListPreDate);
             }
         });
+    }
+
+    public void calculateShoppingCart() {
+        FirebaseUtil.getPlanCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<Plan> planList = new ArrayList<>();
+                List<Ingredient> shoppingListPreDate = new ArrayList<>();
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                for (DocumentSnapshot document : documents) {
+                    Plan plan = document.toObject(Plan.class);
+                    planList.add(plan);
+                }
+                FirebaseUtil.getIngredientCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Ingredient> IngredientList = new ArrayList<>();
+                        List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot document : documents) {
+                            Ingredient ingredient = document.toObject(Ingredient.class);
+                            Log.d("TAG", "->: " + ingredient.id);
+                            IngredientList.add(ingredient);
+                        }
+                        Map<String, Integer> countMap = new HashMap<>();
+                        for (Plan plan : planList) {
+                            for (AnotherIngredient anotherIngredient : plan.list) {
+                                Integer integer = countMap.get(anotherIngredient.ingredientId);
+                                if (integer == null) {
+                                    integer = 0;
+                                }
+                                integer += anotherIngredient.count;
+                                countMap.put(anotherIngredient.ingredientId, integer);
+                            }
+                        }
+                        for (Ingredient preDatum : IngredientList) {
+                            Integer integer = countMap.get(preDatum.id);
+                            if (integer != null && (integer > preDatum.count)) {
+                                preDatum.count = Math.abs(integer - preDatum.count);
+                                shoppingListPreDate.add(preDatum);
+                            }
+                        }
+                        shoppingList.setValue(shoppingListPreDate);
+                    }
+                });
+
+            }
+        });
+
+
     }
 
     public void refreshIngredients() {
@@ -118,39 +193,13 @@ public class MainViewModel extends ViewModel {
                     Ingredient ingredient = document.toObject(Ingredient.class);
                     Log.d("TAG", "->: " + ingredient.id);
                     preData.add(ingredient);
-                    if (ingredient.count < 0) {
-                        shoppingListPreDate.add(ingredient);
-                    }
                 }
                 ingredients.setValue(preData);
-                shoppingListPreDate.sort((o1, o2) -> {
-                    if (shoppingListOrderBy.equals("description")) {
-                        return Collator.getInstance(Locale.CHINESE).compare(o1.description, o2.description);
-                    } else {
-                        return Collator.getInstance(Locale.CHINESE).compare(o1.category, o2.category);
-                    }
-                });
-                shoppingList.setValue(shoppingListPreDate);
+
             }
         });
     }
 
-
-    public void changeCount(String id, int count) {
-        List<Ingredient> value = ingredients.getValue();
-        for (Ingredient ingredient : value) {
-            if (ingredient.id.equals(id)) {
-                ingredient.count -= count;
-                FirebaseUtil.getIngredientCollection().document(id).update(ingredient.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        refreshIngredients();
-                    }
-                });
-                break;
-            }
-        }
-    }
 
     public void addPlan(Ingredient ingredient, int count) {
         Plan plan = new Plan();
@@ -200,24 +249,5 @@ public class MainViewModel extends ViewModel {
                         refreshPlans();
                     }
                 });
-    }
-
-    public void changeCount(List<AnotherIngredient> recipesIngredients) {
-//        for (计划 计划item: 计划List){
-//            for (食物 食物item: 计划Item.食物List){
-//                for (食物 仓库食物Item:仓库List){
-//
-//                }
-//            }
-//        }
-
-        List<Ingredient> value = ingredients.getValue();
-        for (Ingredient ingredient : value) {
-            for (AnotherIngredient recipesIngredient : recipesIngredients) {
-                if (ingredient.id.equals(recipesIngredient.ingredientId)) {
-                    changeCount(ingredient.id, recipesIngredient.count);
-                }
-            }
-        }
     }
 }

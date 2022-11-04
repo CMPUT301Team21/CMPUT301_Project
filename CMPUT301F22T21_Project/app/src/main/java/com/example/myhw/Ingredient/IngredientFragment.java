@@ -35,12 +35,12 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
         @SuppressLint("SetTextI18n")
         @Override
         public void bind(ItemIngredientBinding itemIngredientBinding, Ingredient ingredient, int position) {
-            itemIngredientBinding.tvCategory.setText("Category:" + ingredient.category);
-            itemIngredientBinding.tvBastBeforeDate.setText("Bast Before Date:" + ingredient.time);
-            itemIngredientBinding.tvCount.setText("Count:" + (Math.max(ingredient.count, 0)));
-            itemIngredientBinding.tvUnitCost.setText("Unit:" + ingredient.unit);
-            itemIngredientBinding.tvLocation.setText("Location:" + ingredient.location);
-            itemIngredientBinding.tvDescription.setText("Description:" + ingredient.description);
+            itemIngredientBinding.tvCategory.setText( ingredient.category);
+            itemIngredientBinding.tvBastBeforeDate.setText( ingredient.time);
+            itemIngredientBinding.tvCount.setText((Math.max(ingredient.count, 0))+"");
+            itemIngredientBinding.tvUnitCost.setText( ingredient.unit);
+            itemIngredientBinding.tvLocation.setText( ingredient.location);
+            itemIngredientBinding.tvDescription.setText( ingredient.description);
             itemIngredientBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -64,7 +64,7 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
                 adapter.notifyDataSetChanged();
             }
         });
-
+        viewBinder.add.setOnClickListener(v -> startActivity(AddIngredientActivity.class));
     }
 
 
@@ -74,13 +74,6 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
         viewModel.refreshIngredients();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId()== R.id.menu_add_ingredient){
-            startActivity(AddIngredientActivity.class);
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void initListener() {

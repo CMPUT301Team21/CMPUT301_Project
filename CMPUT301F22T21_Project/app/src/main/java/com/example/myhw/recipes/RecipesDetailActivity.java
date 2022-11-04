@@ -1,27 +1,21 @@
 package com.example.myhw.recipes;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.myhw.FirebaseUtil;
-import com.example.myhw.Ingredient.Ingredient;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.R;
 import com.example.myhw.base.BaseBindingActivity;
 import com.example.myhw.base.BindAdapter;
 import com.example.myhw.databinding.ActivityRecipesDetailBinding;
 import com.example.myhw.databinding.ItemRecipeIngredient1Binding;
-import com.example.myhw.databinding.ItemRecipeIngredientBinding;
 import com.example.myhw.plan.AnotherIngredient;
-
-import java.io.Serializable;
 
 public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDetailBinding> {
     private BindAdapter<ItemRecipeIngredient1Binding, AnotherIngredient> adapter = new BindAdapter<ItemRecipeIngredient1Binding, AnotherIngredient>() {

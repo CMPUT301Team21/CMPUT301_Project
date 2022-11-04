@@ -14,36 +14,92 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <EditText
-            android:id="@+id/et_description"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="description" />
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/et_count"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="count"
-            android:inputType="number" />
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Description:"
+                android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/et_unit_cost"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="unit cost" />
+            <EditText
+                android:id="@+id/et_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="description" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/et_category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="category" />
 
-        <EditText
-            android:id="@+id/et_location"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Location" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Count:"
+                android:textColor="@color/black" />
+
+            <EditText
+                android:id="@+id/et_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="count"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Unit cost:"
+                android:textColor="@color/black" />
+
+            <EditText
+                android:id="@+id/et_unit_cost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="unit cost" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Category:"
+                android:textColor="@color/black" />
+
+            <EditText
+                android:id="@+id/et_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="category" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Location:"
+                android:textColor="@color/black" />
+
+            <EditText
+                android:id="@+id/et_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Location" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_date"
