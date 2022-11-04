@@ -3,6 +3,7 @@ package com.example.myhw;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -16,7 +17,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-
+/**
+ * THE TEST CASES ARE NOT ENTIRELY DONE, FACE DIFFUTIUES OF CLICKING ITEM IN LIST,
+ * AND THE SORT BUTTON
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class MainActivityTest {
@@ -49,6 +53,7 @@ public class MainActivityTest {
 
     @Test
     public void testDeleteIngredient(){
+        testAddIngredient();
         onView(withId(R.id.ingredient)).perform(click());
 //
         try {
@@ -58,12 +63,17 @@ public class MainActivityTest {
         }
 //        onView(withText("Lobster")).perform(ViewActions.click());
 //        onView(withId(R.id.rv_data)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
-        onView(withText("tomato for test")).perform(click()); //Check the name on the screen
+//        onView(withText(endsWith("tomato for test"))).perform(ViewActions.click()); //Check the name on the screen
+        // Click item at position 3
+//        onView(withId(R.id.rv_data))
+//                .perform(RecyclerViewActions.actionOnItemAtPosition(3, click()));
+
+//        onView(withRecyclerView(R.id.scroll_view).atPosition(3)).perform(click());
         onView(withId(R.id.btn_delete)).perform(click());
     }
 
     @Test
-    public void testAddMealPlan(){
+    public void testAddMealPlan1(){
         onView(withId(R.id.mealPlan)).perform(click());
         onView(withId(R.id.menu_add_plan)).perform(click());
         onView(withText("Add from ingredient")).perform(click());
@@ -76,29 +86,79 @@ public class MainActivityTest {
     }
 
     @Test
+    public void testAddMealPlan2(){
+        onView(withId(R.id.mealPlan)).perform(click());
+        onView(withId(R.id.menu_add_plan)).perform(click());
+        onView(withText("Add from recipe")).perform(click());
+        onView(withId(android.R.id.button1)).perform(click());
+//        onView(withText()).atPosition(0).perform(click());
+
+
+
+
+    }
+
+    @Test
     public void testAddRecipe(){
+        //pick ingredient
         onView(withId(R.id.recipes)).perform(click());
         onView(withId(R.id.menu_add_recipes)).perform(click());
         onView(withId(R.id.et_preparation_time)).perform(ViewActions.typeText("30"));
         onView(withId(R.id.et_number)).perform(ViewActions.typeText("1"));
         onView(withId(R.id.et_category)).perform(ViewActions.typeText("dinner"));
         onView(withId(R.id.et_comments)).perform(ViewActions.typeText("dinner for tonight"));
+        onView(withId(R.id.et_title)).perform(ViewActions.typeText("meet ball"));
+        //not yet sure how to take a picture here, skip this part
+        Espresso.closeSoftKeyboard();//close key board
+        onView(withId(R.id.btn_add_ingredient)).perform(click());
+        //pick an ingredient
 
-//        onView(withId(R.id.btn_add_ingredient)).perform(click());
 
     }
 
-//    @Test
-//    public void testAddRecipe(){
-//        onView(withId(R.id.recipes)).perform(click());
-//        onView(withId(R.id.menu_add_recipes)).perform(click());
-//        onView(withId(R.id.et_preparation_time)).perform(ViewActions.typeText("30"));
-//        onView(withId(R.id.et_number)).perform(ViewActions.typeText("1"));
-//        onView(withId(R.id.et_category)).perform(ViewActions.typeText("dinner"));
-//        onView(withId(R.id.et_comments)).perform(ViewActions.typeText("dinner for tonight"));
-//
-////        onView(withId(R.id.btn_add_ingredient)).perform(click());
-//
-//    }
-//
+    @Test
+    public void testRecipeSort(){
+
+        onView(withId(R.id.recipes)).perform(click());
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        onView(withId(R.id.menu_edit)).perform(click());
+        onView(withId(R.id.menu_sort)).perform(click());
+
+
+
+    }
+
+    @Test
+    public void testShoppingList(){
+        onView(withId(R.id.shoppingList)).perform(click());
+        //check the list item is matched,
+//        onView(withText("banana")).perform(isDisplayed());
+
+
+    }
+
+    @Test
+    public void testShoppingListSort1(){
+        onView(withId(R.id.shoppingList)).perform(click());
+        //check the list item is matched,
+        onView(withId(R.id.menu_sort_shopping)).perform(click());
+        onView(withText("description")).perform(click());
+    }
+
+    @Test
+    public void testShoppingListSort2(){
+        onView(withId(R.id.shoppingList)).perform(click());
+        //check the list item is matched,
+        onView(withId(R.id.menu_sort_shopping)).perform(click());
+        onView(withText("category")).perform(click());
+    }
+
+
+
+
+
 }
