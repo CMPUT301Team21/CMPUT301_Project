@@ -1,11 +1,14 @@
 package com.example.myhw;
 
 
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
@@ -16,6 +19,8 @@ import androidx.test.filters.LargeTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.regex.Matcher;
 
 /**
  * THE TEST CASES ARE NOT ENTIRELY DONE, FACE DIFFUTIUES OF CLICKING ITEM IN LIST,
@@ -28,6 +33,7 @@ public class MainActivityTest {
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
             new ActivityScenarioRule<>(MainActivity.class);
+
 
     @Test
     public void testAddIngredient(){
@@ -61,12 +67,10 @@ public class MainActivityTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//        onView(withText("Lobster")).perform(ViewActions.click());
-//        onView(withId(R.id.rv_data)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
-//        onView(withText(endsWith("tomato for test"))).perform(ViewActions.click()); //Check the name on the screen
-        // Click item at position 3
-//        onView(withId(R.id.rv_data))
-//                .perform(RecyclerViewActions.actionOnItemAtPosition(3, click()));
+
+//        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.actionOnItem(withText("specific string"), click()));
+
+
 
 //        onView(withRecyclerView(R.id.scroll_view).atPosition(3)).perform(click());
         onView(withId(R.id.btn_delete)).perform(click());
