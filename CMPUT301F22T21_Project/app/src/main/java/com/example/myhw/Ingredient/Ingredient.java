@@ -16,6 +16,11 @@ public class Ingredient implements Serializable {
     public String location;
     public String time;
 
+
+    /**
+     * Build a hash map
+     * @return The HashMap of the string object
+     */
     public Map<String, Object> toMap() {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("description", description);

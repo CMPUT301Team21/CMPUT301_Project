@@ -21,9 +21,20 @@ import java.lang.reflect.Type;
 
 
 public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragment {
+    /**
+     * This abstract variable is a customized BindingFragment activity extends from ViewBinding.
+     */
     protected T viewBinder;
     protected ProgressDialog dialog;
 
+
+    /**
+     * This returns a view binder
+     * @param inflater This is the inflater
+     * @param container This is the container
+     * @param savedInstanceState This is the saved instance state
+     * @return viewBinder
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,25 +58,44 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
         initListener();
         return viewBinder.getRoot();
     }
-
+    /**
+     * Display loading dialog
+     */
     protected void showLoading() {
         dialog.show();
     }
-
+    /**
+     * dismiss loading dialog
+     */
     protected void dismissLoading() {
         dialog.dismiss();
     }
-
+    /**
+     * Testing
+     * @param msg  This is the display message
+     */
     protected void toast(String msg) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
-    }
 
+    }
+    /**
+     * Initialize data
+     */
     protected abstract void initData();
 
+    /**
+     * Transport data between activities
+     */
     public interface IntentApply {
         void apply(Intent intent);
     }
 
+    /**
+     * The start of the activity
+     * @param tClass This is the class
+     * @param intentApply This is the intent
+     * @param <T>  This is the parameter
+     */
     public <T extends Activity> void startActivity(Class<T> tClass, IntentApply intentApply) {
         Intent intent = new Intent(getActivity(), tClass);
         if (intentApply != null) {
@@ -74,6 +104,13 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
         startActivity(intent);
     }
 
+    /**
+     * The method that calculate the result
+     * @param tClass This is the class
+     * @param intentApply This is the content
+     * @param requestCode This is the request code
+     * @param <T> This is the parameter
+     */
     public <T extends Activity> void startActivityForResult(Class<T> tClass, IntentApply intentApply, int requestCode) {
         Intent intent = new Intent(getActivity(), tClass);
         if (intentApply != null) {
@@ -82,11 +119,18 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
         startActivityForResult(intent, requestCode);
 
     }
+    /**
+     * The start activity
+     * @param tClass This is the class
+     * @param <T> This is the parameter
+     */
 
     public <T extends Activity> void startActivity(Class<T> tClass) {
         startActivity(tClass, null);
     }
-
+    /**
+     * Initialize listener
+     */
     protected abstract void initListener();
 
 }

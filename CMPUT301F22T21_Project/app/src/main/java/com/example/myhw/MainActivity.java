@@ -21,7 +21,7 @@ import java.util.List;
 public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
     private List<Fragment> fragments = new ArrayList<>();
 
-    //仓库:
+    //storage
     @Override
     protected void initListener() {
 
@@ -30,6 +30,9 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
     private int currentPage = 0;
     private Menu menu;
 
+    /**
+     * Initialize data
+     */
     @Override
     protected void initData() {
         fragments.add(new IngredientFragment());
@@ -67,12 +70,22 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
         });
     }
 
+    /**
+     * This records the current page and display corresponding menu.
+     * @param menu This is the target menu
+     * @return the option menu
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         this.menu = menu;
         return super.onPrepareOptionsMenu(menu);
     }
 
+    /**
+     * This records which menu is selected.
+     * @param item This is the selected item
+     * @return If the item is clicked
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         for (Fragment fragment : fragments) {
@@ -81,6 +94,10 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * This records the change of fragment.
+     * @param fragment This is the fragment need to be changed
+     */
     private void changeFragment(Fragment fragment) {
         FragmentManager supportFragmentManager = getSupportFragmentManager();
 

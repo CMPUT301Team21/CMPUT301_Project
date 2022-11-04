@@ -28,11 +28,20 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
     private MainViewModel viewModel;
     private int currentIndex = -1;
     private BindAdapter<ItemIngredientBinding, Ingredient> adapter = new BindAdapter<ItemIngredientBinding, Ingredient>() {
+
+        /**
+         * Create a listview holder
+         *  @return
+         *       Return holder
+         */
         @Override
         public ItemIngredientBinding createHolder(ViewGroup parent) {
             return ItemIngredientBinding.inflate(getLayoutInflater(), parent, false);
         }
 
+        /**
+         * Set fragment information
+         */
         @SuppressLint("SetTextI18n")
         @Override
         public void bind(ItemIngredientBinding itemIngredientBinding, Ingredient ingredient, int position) {
@@ -65,12 +74,18 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
         }
     };
 
+    /**
+     * Initialize data.
+     */
     @Override
     protected void initData() {
         viewBinder.rvData.setAdapter(adapter);
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
     }
 
+    /**
+     * Initialize listener
+     */
     @Override
     protected void initListener() {
         viewModel.observerShoppingList().observe(this, new Observer<List<Ingredient>>() {
@@ -84,6 +99,10 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
         });
     }
 
+    /**
+     * Set item selected
+     * @param item This is a menu item.
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -105,6 +124,9 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Display sorted shopping list
+     */
     private void showShoppingListSort() {
         String[] items = getResources().getStringArray(R.array.orderBy);
         new AlertDialog.Builder(requireActivity()).setItems(items, new DialogInterface.OnClickListener() {
