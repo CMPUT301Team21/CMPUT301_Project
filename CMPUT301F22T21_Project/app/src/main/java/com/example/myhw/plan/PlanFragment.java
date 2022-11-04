@@ -64,6 +64,9 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
         }
     };
 
+    /**
+     * Initialize data
+     */
     @Override
     protected void initData() {
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
@@ -79,11 +82,18 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
         });
         viewModel.refreshPlans();
     }
-
+    /**
+     * Initialize listener
+     */
     @Override
     protected void initListener() {
     }
 
+    /**
+     * Detect if item selected
+     * @param item This is the item in the menu
+     * @return the selected item
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_add_plan) {
@@ -92,6 +102,9 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Display adding option dialog
+     */
     private void showAddFunctionDialog() {
         new AlertDialog.Builder(requireActivity()).setItems(
                 new CharSequence[]{
@@ -112,6 +125,10 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                 }).show();
     }
 
+    /**
+     * display tips
+     * @param index This is the index of the tips
+     */
     private void showTipsDialog(int index) {
         new AlertDialog.Builder(getContext()).setMessage("Do you want to plan another day").setNegativeButton("sure", (dialog, which) -> {
             if (index == 0) {
@@ -123,6 +140,12 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
         }).setPositiveButton("cancel", null).show();
     }
 
+    /**
+     * Track item
+     * @param requestCode This is the requested code
+     * @param resultCode This is the result code
+     * @param data This is the target data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -180,6 +203,10 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
         }
     }
 
+    /**
+     * Prompt user to enter count
+     * @param listener This is the listener
+     */
     private void showAdd2PlanDialog(OnInputListener listener) {
         EditText editText = new EditText(getContext());
         editText.setHint("Input Count");
@@ -201,10 +228,16 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                 .show();
     }
 
+    /**
+     * Provide interface for listener
+     */
     private interface OnInputListener {
         void result(int input);
     }
 
+    /**
+     * update when back
+     */
     @Override
     public void onResume() {
         super.onResume();

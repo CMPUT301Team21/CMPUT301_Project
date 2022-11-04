@@ -36,27 +36,54 @@ public class MainViewModel extends ViewModel {
     private String shoppingListOrderBy = "description";
     private String recipesOrderBy = "title";
 
+    /**
+     * This decide the order of recipes.
+     * @param recipesOrderBy This is the order of the recipes
+     */
     public void setRecipesOrderBy(String recipesOrderBy) {
         this.recipesOrderBy = recipesOrderBy;
         refreshRecipe();
     }
-
+    /**
+     * This returns a list of ingredients
+     * @return
+     *      Return the ingredients
+     */
     public LiveData<List<Ingredient>> observerIngredients() {
         return ingredients;
     }
 
+    /**
+     * This returns the shopping list.
+     * @return
+     *      Return the shopping list
+     */
     public LiveData<List<Ingredient>> observerShoppingList() {
         return shoppingList;
     }
 
+    /**
+     * This returns the meal plan.
+     * @return
+     *      Return the meal plan
+     */
     public LiveData<List<Plan>> observerPlans() {
         return plans;
     }
 
+    /**
+     * This returns the recipes.
+     * @return
+     *      Return the recipes
+     */
     public LiveData<List<Recipes>> observerRecipes() {
         return recipes;
     }
 
+    /**
+     * This decide the order of shopping list.
+     * @param orderBy This is the order of the shopping list.
+     */
     public void changeShoppingListOrderBy(String orderBy) {
         shoppingListOrderBy = orderBy;
         List<Ingredient> value = shoppingList.getValue();
@@ -72,6 +99,9 @@ public class MainViewModel extends ViewModel {
         shoppingList.setValue(value);
     }
 
+    /**
+     * This update the recipe order.
+     */
     public void refreshRecipe() {
         FirebaseUtil.getRecipesCollection().orderBy(recipesOrderBy, Query.Direction.ASCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -89,6 +119,9 @@ public class MainViewModel extends ViewModel {
         });
     }
 
+    /**
+     * This update the meal plan order.
+     */
     public void refreshPlans() {
         FirebaseUtil.getPlanCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -106,6 +139,9 @@ public class MainViewModel extends ViewModel {
         });
     }
 
+    /**
+     * This update the ingredient storage order.
+     */
     public void refreshIngredients() {
         FirebaseUtil.getIngredientCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -135,7 +171,10 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-
+    /**
+     * This change the count of ingredient in storage.
+     * @param id This is the id of the count attribute of the ingredient
+     */
     public void changeCount(String id, int count) {
         List<Ingredient> value = ingredients.getValue();
         for (Ingredient ingredient : value) {
@@ -152,6 +191,11 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+    /**
+     * This add a new plan in the meal plan.
+     * @param ingredient This is the target ingredient
+     * @param count This is the count of the ingredient
+     */
     public void addPlan(Ingredient ingredient, int count) {
         Plan plan = new Plan();
         plan.list = new ArrayList<>();
@@ -162,6 +206,10 @@ public class MainViewModel extends ViewModel {
         addPlan(plan);
     }
 
+    /**
+     * This update the added meal plan into the database.
+     * @param plan This is the target meal plan
+     */
     public void addPlan(Plan plan) {
         FirebaseUtil.getPlanCollection().add(plan).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
@@ -171,6 +219,12 @@ public class MainViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Update the meal plan
+     * @param ingredient Target ingredient
+     * @param plan Target meal plan
+     * @param count Target count
+     */
     public void updatePlan(Ingredient ingredient, Plan plan, int count) {
         AnotherIngredient existsIngredient = null;
         for (AnotherIngredient anotherIngredient : plan.list) {
@@ -190,6 +244,10 @@ public class MainViewModel extends ViewModel {
         updatePlan(plan);
     }
 
+    /**
+     * Update the meal plan
+     * @param plan The provided plan
+     */
     public void updatePlan(Plan plan) {
         FirebaseUtil.getPlanCollection()
                 .document(plan.id)
@@ -202,6 +260,10 @@ public class MainViewModel extends ViewModel {
                 });
     }
 
+    /**
+     * Change the count of the ingredient
+     * @param recipesIngredients The provided ingredient in recipes
+     */
     public void changeCount(List<AnotherIngredient> recipesIngredients) {
 //        for (计划 计划item: 计划List){
 //            for (食物 食物item: 计划Item.食物List){

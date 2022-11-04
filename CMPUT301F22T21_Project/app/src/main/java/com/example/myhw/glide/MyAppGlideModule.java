@@ -17,6 +17,13 @@ import java.io.InputStream;
 
 @GlideModule
 public class MyAppGlideModule extends AppGlideModule {
+
+    /**
+     * Connect the database with program
+     * @param context This is the context
+     * @param glide This is the glide
+     * @param registry This is the registry
+     */
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
         registry.append(

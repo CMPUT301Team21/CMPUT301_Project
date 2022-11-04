@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Plan {
+    /**
+     * Build a hash map
+     */
     public List<AnotherIngredient> list;
     @DocumentId
     public String id;
