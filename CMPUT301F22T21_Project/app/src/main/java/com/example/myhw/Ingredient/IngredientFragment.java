@@ -1,6 +1,8 @@
 package com.example.myhw.Ingredient;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.MenuItem;
@@ -35,12 +37,12 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
         @SuppressLint("SetTextI18n")
         @Override
         public void bind(ItemIngredientBinding itemIngredientBinding, Ingredient ingredient, int position) {
-            itemIngredientBinding.tvCategory.setText("Category:" + ingredient.category);
-            itemIngredientBinding.tvBastBeforeDate.setText("Bast Before Date:" + ingredient.time);
-            itemIngredientBinding.tvCount.setText("Count:" + (Math.max(ingredient.count, 0)));
-            itemIngredientBinding.tvUnitCost.setText("Unit:" + ingredient.unit);
-            itemIngredientBinding.tvLocation.setText("Location:" + ingredient.location);
-            itemIngredientBinding.tvDescription.setText("Description:" + ingredient.description);
+            itemIngredientBinding.tvCategory.setText(ingredient.category);
+            itemIngredientBinding.tvBastBeforeDate.setText(ingredient.time);
+            itemIngredientBinding.tvCount.setText((Math.max(ingredient.count, 0)) + "");
+            itemIngredientBinding.tvUnitCost.setText(ingredient.unit);
+            itemIngredientBinding.tvLocation.setText(ingredient.location);
+            itemIngredientBinding.tvDescription.setText(ingredient.description);
             itemIngredientBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -50,9 +52,6 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
         }
     };
 
-    /**
-     * Initialize data
-     */
     @Override
     protected void initData() {
         viewBinder.rvData.setAdapter(adapter);
@@ -67,32 +66,52 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
                 adapter.notifyDataSetChanged();
             }
         });
-
+        viewBinder.add.setOnClickListener(v -> startActivity(AddIngredientActivity.class));
     }
 
-    /**
-     * update when back
-     */
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_sort_ingredient) {
+            showSortDialog();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showSortDialog() {
+        new AlertDialog.Builder(getContext()).setItems(new CharSequence[]{
+                "Sort by description",
+                "Sort by base before date",
+                "Sort by location",
+                "Sort by category"
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        viewModel.setIngredientOrderBy("description");
+                        break;
+                    case 1:
+                        viewModel.setIngredientOrderBy("time");
+                        break;
+                    case 2:
+                        viewModel.setIngredientOrderBy("location");
+                        break;
+                    case 3:
+                        viewModel.setIngredientOrderBy("category");
+                        break;
+                }
+            }
+        }).show();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         viewModel.refreshIngredients();
     }
-    /**
-     * detect if item selected
-     * @param item  This is the item in the menu
-     * @return The selected item
-     */
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId()== R.id.menu_add_ingredient){
-            startActivity(AddIngredientActivity.class);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    /**
-     * Initialize listener
-     */
+
+
     @Override
     protected void initListener() {
     }

@@ -1,10 +1,14 @@
 package com.example.myhw.recipes;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +16,14 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.example.myhw.FirebaseUtil;
+import com.example.myhw.Ingredient.AddIngredientActivity;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.Ingredient.Ingredient;
 import com.example.myhw.Ingredient.SelectIngredientActivity;
 import com.example.myhw.R;
@@ -22,23 +31,21 @@ import com.example.myhw.base.BaseBindingActivity;
 import com.example.myhw.base.BindAdapter;
 import com.example.myhw.databinding.ActivityAddRecipeBinding;
 import com.example.myhw.databinding.ItemRecipeIngredientBinding;
-import com.example.myhw.plan.AnotherIngredient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBinding> {
     private String imageDocId = "";
-    private BindAdapter<ItemRecipeIngredientBinding, AnotherIngredient> adapter = new BindAdapter<ItemRecipeIngredientBinding, AnotherIngredient>() {
+    private Uri photoUri;
+    private BindAdapter<ItemRecipeIngredientBinding, Ingredient> adapter = new BindAdapter<ItemRecipeIngredientBinding, Ingredient>() {
         @Override
         public ItemRecipeIngredientBinding createHolder(ViewGroup parent) {
             return ItemRecipeIngredientBinding.inflate(getLayoutInflater(), parent, false);
@@ -46,7 +53,7 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
 
         @SuppressLint("SetTextI18n")
         @Override
-        public void bind(ItemRecipeIngredientBinding itemRecipeIngredientBinding, AnotherIngredient recipesIngredient, int position) {
+        public void bind(ItemRecipeIngredientBinding itemRecipeIngredientBinding, Ingredient recipesIngredient, int position) {
             itemRecipeIngredientBinding.getRoot().setText(recipesIngredient.description + "," + recipesIngredient.count + "," + recipesIngredient.unit + "," + recipesIngredient.category);
         }
     };
@@ -75,10 +82,6 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
             String number = viewBinder.etNumber.getText().toString();
             if (title.isEmpty() || category.isEmpty() || comments.isEmpty() || preparationTime.isEmpty() || number.isEmpty()) {
                 toast("Please complete everything");
-                return;
-            }
-            if (imageDocId.isEmpty()) {
-                toast("Please upload pictures");
                 return;
             }
             if (adapter.getData().isEmpty()) {
@@ -125,13 +128,33 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
         viewBinder.btnAddIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(AddRecipeActivity.this, SelectIngredientActivity.class), 100);
+                Intent intent = new Intent(AddRecipeActivity.this, AddIngredientActivity.class);
+                intent.putExtra("type", 1);
+                startActivityForResult(intent, 100);
             }
         });
         viewBinder.ivImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"), 101);
+                new AlertDialog.Builder(AddRecipeActivity.this).setItems(new CharSequence[]{"Album", "Camera"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"), 101);
+                        } else {
+                            if (ContextCompat.checkSelfPermission(AddRecipeActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+                                ActivityCompat.requestPermissions(AddRecipeActivity.this, new String[]{Manifest.permission.CAMERA}, 100);
+                                return;
+                            }
+                            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            File localPhotoFile = new File(storageDir, System.currentTimeMillis() + ".jpg");
+                            photoUri = FileProvider.getUriForFile(AddRecipeActivity.this, "com.example.myhw", localPhotoFile);
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                            startActivityForResult(intent, 102);
+                        }
+                    }
+                }).show();
             }
         });
     }
@@ -141,9 +164,11 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
     @SuppressLint("SetTextI18n")
     @Override
     protected void initData() {
+        setTitle("ADD RECIPES");
         viewBinder.rvIngredient.setAdapter(adapter);
         recipes = (Recipes) getIntent().getSerializableExtra("recipes");
         if (recipes != null) {
+            setTitle("EDIT RECIPES");
             viewBinder.etTitle.setText(recipes.title);
             viewBinder.etPreparationTime.setText(recipes.preparationTime);
             viewBinder.etNumber.setText(recipes.numberOfServings + "");
@@ -154,6 +179,32 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
             adapter.notifyDataSetChanged();
             viewBinder.btnDelete.setVisibility(View.VISIBLE);
         }
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                int swipeFlags = ItemTouchHelper.LEFT;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                new AlertDialog.Builder(AddRecipeActivity.this)
+                        .setTitle("Notice")
+                        .setMessage("Are you sure you want to delete this data")
+                        .setNegativeButton("SURE", (dialog, which) -> {
+                            adapter.getData().remove(viewHolder.getAdapterPosition());
+                            adapter.notifyDataSetChanged();
+                        }).setCancelable(false)
+                        .setPositiveButton("CANCEL", (dialog, which) -> adapter.notifyDataSetChanged()).show();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(viewBinder.rvIngredient);
     }
 
     @Override
@@ -163,12 +214,30 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
             switch (requestCode) {
                 case 100: {
                     Ingredient ingredient = (Ingredient) data.getSerializableExtra("ingredient");
-                    showCountInputDialog(ingredient);
+                    Ingredient oldIngredient = null;
+                    for (Ingredient datum : adapter.getData()) {
+                        if (datum.description.equals(ingredient.description)) {
+                            oldIngredient = datum;
+                        }
+                    }
+                    if (oldIngredient != null) {
+                        oldIngredient.count += ingredient.count;
+                    } else {
+                        adapter.getData().add(ingredient);
+                    }
+                    adapter.notifyDataSetChanged();
                 }
                 break;
                 case 101:
                     try {
                         uploadImage(data.getData());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 102:
+                    try {
+                        uploadImage(photoUri);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -198,31 +267,4 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
         });
     }
 
-    private void showCountInputDialog(Ingredient ingredient) {
-        EditText editText = new EditText(this);
-        editText.setHint("Input Count");
-        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        new AlertDialog.Builder(this)
-                .setTitle("Please enter the count")
-                .setView(editText)
-                .setPositiveButton("CANCEL", null)
-                .setNegativeButton("SURE", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String countStr = editText.getText().toString().trim();
-                        if (countStr.isEmpty()) return;
-                        AnotherIngredient recipesIngredient = new AnotherIngredient();
-                        recipesIngredient.count = Integer.parseInt(countStr);
-                        recipesIngredient.category = ingredient.category;
-                        recipesIngredient.description = ingredient.description;
-                        recipesIngredient.location = ingredient.location;
-                        recipesIngredient.ingredientId = ingredient.id;
-                        recipesIngredient.time = ingredient.time;
-                        recipesIngredient.unit = ingredient.unit;
-                        adapter.getData().add(recipesIngredient);
-                        adapter.notifyDataSetChanged();
-                    }
-                })
-                .show();
-    }
 }

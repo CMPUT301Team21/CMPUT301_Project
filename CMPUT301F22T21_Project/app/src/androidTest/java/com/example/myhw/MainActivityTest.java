@@ -1,14 +1,10 @@
 package com.example.myhw;
 
 
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
@@ -19,8 +15,6 @@ import androidx.test.filters.LargeTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.regex.Matcher;
 
 /**
  * THE TEST CASES ARE NOT ENTIRELY DONE, FACE DIFFUTIUES OF CLICKING ITEM IN LIST,
@@ -38,7 +32,7 @@ public class MainActivityTest {
     @Test
     public void testAddIngredient(){
         onView(withId(R.id.ingredient)).perform(click());
-        onView(withId(R.id.menu_add_ingredient)).perform(click()); //click add button
+        onView(withId(R.id.add)).perform(click()); //click add button
 
         onView(withId(R.id.et_description)).perform(ViewActions.typeText("tomato for test"));
         onView(withId(R.id.et_category)).perform(ViewActions.typeText("fruit"));
@@ -79,7 +73,8 @@ public class MainActivityTest {
     @Test
     public void testAddMealPlan1(){
         onView(withId(R.id.mealPlan)).perform(click());
-        onView(withId(R.id.menu_add_plan)).perform(click());
+        onView(withId(R.id.add)).perform(click());
+        //select a date
         onView(withText("Add from ingredient")).perform(click());
         onView(withId(android.R.id.button1)).perform(click());
 //        onView(withText()).atPosition(0).perform(click());
@@ -88,11 +83,13 @@ public class MainActivityTest {
 
 
     }
-
+//
     @Test
     public void testAddMealPlan2(){
         onView(withId(R.id.mealPlan)).perform(click());
-        onView(withId(R.id.menu_add_plan)).perform(click());
+        onView(withId(R.id.mealPlan)).perform(click());
+        onView(withId(R.id.title)).perform(click());
+        //select a date
         onView(withText("Add from recipe")).perform(click());
         onView(withId(android.R.id.button1)).perform(click());
 //        onView(withText()).atPosition(0).perform(click());
@@ -106,7 +103,7 @@ public class MainActivityTest {
     public void testAddRecipe(){
         //pick ingredient
         onView(withId(R.id.recipes)).perform(click());
-        onView(withId(R.id.menu_add_recipes)).perform(click());
+        onView(withId(R.id.add)).perform(click());
         onView(withId(R.id.et_preparation_time)).perform(ViewActions.typeText("30"));
         onView(withId(R.id.et_number)).perform(ViewActions.typeText("1"));
         onView(withId(R.id.et_category)).perform(ViewActions.typeText("dinner"));

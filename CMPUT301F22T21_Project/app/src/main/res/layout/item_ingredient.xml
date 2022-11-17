@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="5dp"
     android:background="@color/white"
     android:elevation="1dp"
-    android:layout_margin="5dp"
     android:orientation="vertical">
 
     <TextView
@@ -12,7 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:hint="description"
+        android:drawableLeft="@drawable/ic_food_name"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
+        android:hint=""
         android:padding="10dp"
         android:textColor="@color/black"
         android:textSize="16dp" />
@@ -23,34 +26,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
         android:hint="Location"
-        android:padding="10dp" />    <TextView
+        android:padding="10dp"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/tv_bast_before_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:drawableLeft="@drawable/ic_ca"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
         android:hint="bast before date"
         android:padding="10dp" />
+
     <TextView
         android:id="@+id/tv_count"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:drawableLeft="@drawable/ic_number"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
         android:hint="count"
         android:inputType="number"
         android:padding="10dp" />
+
     <TextView
         android:id="@+id/tv_unit_cost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:hint="unit cost"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tv_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:hint="category"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:visibility="gone" />
 </LinearLayout>

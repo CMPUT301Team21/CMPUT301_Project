@@ -7,14 +7,14 @@ import android.view.ViewGroup;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myhw.FirebaseUtil;
+import com.example.myhw.Ingredient.Ingredient;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.MainViewModel;
 import com.example.myhw.base.BaseBindingActivity;
 import com.example.myhw.base.BindAdapter;
 import com.example.myhw.databinding.ActivitySelectRecipeBinding;
 import com.example.myhw.databinding.ItemSelectRecipesBinding;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class SelectRecipeActivity extends BaseBindingActivity<ActivitySelectRecipeBinding> {
@@ -28,14 +28,16 @@ public class SelectRecipeActivity extends BaseBindingActivity<ActivitySelectReci
         @Override
         public void bind(ItemSelectRecipesBinding itemSelectRecipesBinding, Recipes recipes, int position) {
             FirebaseUtil.loadImage(recipes.photo, itemSelectRecipesBinding.ivImage);
-            itemSelectRecipesBinding.tvIngredient.setText(recipes.getIngredients());
+            StringBuilder builder = new StringBuilder();
+            for (Ingredient ingredient : recipes.ingredients) {
+                builder.append(ingredient.description).append("\t\t\t\tX").append(ingredient.count).append("\n");
+            }
+            builder.append("Number Of Servings:").append(recipes.numberOfServings);
+            itemSelectRecipesBinding.tvIngredient.setText(builder.toString());
             itemSelectRecipesBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setResult(RESULT_OK, new Intent()
-                            .putExtra("ingredients", (Serializable) recipes.ingredients)
-                            .putExtra("number", recipes.numberOfServings)
-                    );
+                    setResult(RESULT_OK, new Intent().putExtra("recipes", recipes));
                     finish();
                 }
             });
@@ -64,6 +66,7 @@ public class SelectRecipeActivity extends BaseBindingActivity<ActivitySelectReci
 
     @Override
     protected void initData() {
+        setTitle("CHOOSE BY RECIPE");
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewBinder.rvData.setAdapter(adapter);
 

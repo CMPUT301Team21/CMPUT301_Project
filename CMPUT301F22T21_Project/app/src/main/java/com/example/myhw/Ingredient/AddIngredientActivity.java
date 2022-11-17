@@ -2,13 +2,14 @@ package com.example.myhw.Ingredient;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 
 import androidx.annotation.NonNull;
 
-import com.example.myhw.FirebaseUtil;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.base.BaseBindingActivity;
 import com.example.myhw.databinding.ActivityAddIngredientBinding;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -23,22 +24,14 @@ public class AddIngredientActivity extends BaseBindingActivity<ActivityAddIngred
     private String time = "";
     Calendar instance = Calendar.getInstance();
 
-    /**
-     * Initialize a listener
-     */
     @Override
     protected void initListener() {
-        viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        viewBinder.btnBack.setOnClickListener(v -> finish());
         viewBinder.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseUtil.getIngredientCollection()
-                        .document(ingredient.id)
+                        .document(ingredient.description)
                         .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {
@@ -72,82 +65,83 @@ public class AddIngredientActivity extends BaseBindingActivity<ActivityAddIngred
                     toast("Please complete everything");
                     return;
                 }
-                if (time.isEmpty()) {
+                if ((type != 1) && time.isEmpty()) {
                     toast("Please choose the best time");
                     return;
                 }
-                Map<String, Object> ingredientMap = new HashMap<>();
-                ingredientMap.put("category", category);
-                ingredientMap.put("description", description);
-                ingredientMap.put("unit", unitCost);
-                ingredientMap.put("location", location);
+                if (ingredient == null) {
+                    ingredient = new Ingredient();
+                    ingredient.category = category;
+                    ingredient.unit = unitCost;
+                    ingredient.description = description;
+                    ingredient.location = location;
+                }
+                ingredient.time = time;
+                ingredient.count = Integer.parseInt(count);
                 if (type == 1) {
-                    ingredientMap.put("count", ingredient.count + Integer.parseInt(count));
-                } else {
-                    ingredientMap.put("count", Integer.parseInt(count));
+                    setResult(RESULT_OK, new Intent().putExtra("ingredient", ingredient));
+                    finish();
+                    return;
                 }
-
-                ingredientMap.put("time", time);
+                if (oldIngredient != null) {
+                    ingredient.count += oldIngredient.count;
+                }
                 showLoading();
-                if (ingredient != null) {
-                    FirebaseUtil.getIngredientCollection()
-                            .document(ingredient.id)
-                            .update(ingredientMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    dismissLoading();
-                                    toast("Update successful");
-                                    Log.d("TAG", "onSuccess: " + ingredient.id);
-                                    finish();
-                                }
-                            });
-                } else {
-                    FirebaseUtil.getIngredientCollection()
-                            .add(ingredientMap)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    toast("Saved successfully");
-                                    dismissLoading();
-                                    finish();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d("TAG", "onFailure: " + e);
-                                    toast("Save failed");
-                                }
-                            });
-                }
+                FirebaseUtil.getIngredientCollection()
+                        .document(ingredient.description)
+                        .set(ingredient)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                dismissLoading();
+                                toast("Update successful");
+                                finish();
+                            }
+                        });
+
             }
         });
     }
 
     private Ingredient ingredient;
+    private Ingredient oldIngredient;
     private int type;
 
-    /**
-     * Initialize a data
-     */
     @SuppressLint("SetTextI18n")
     @Override
     protected void initData() {
         type = getIntent().getIntExtra("type", 0);
         ingredient = (Ingredient) getIntent().getSerializableExtra("ingredient");
+        oldIngredient = (Ingredient) getIntent().getSerializableExtra("oldIngredient");
+        setTitle("INGREDIENT STORAGE");
+
         if (ingredient != null) {
+            viewBinder.etDescription.setEnabled(false);
             viewBinder.etCategory.setText(ingredient.category);
             viewBinder.etLocation.setText(ingredient.location);
-            if (type == 0) {
-                viewBinder.etCount.setText((Math.max(ingredient.count, 0)) + "");
-            } else {
-                viewBinder.etCount.setText((Math.abs(ingredient.count)) + "");
-            }
             viewBinder.etUnitCost.setText(ingredient.unit);
+            viewBinder.etCount.setText(ingredient.count + "");
             viewBinder.etDescription.setText(ingredient.description);
-            viewBinder.btnDate.setText(time = ingredient.time);
+            time = ingredient.time==null?"":ingredient.time;
+            viewBinder.btnDate.setText(time.isEmpty()?"bast before date":time);
             viewBinder.btnDelete.setVisibility(View.VISIBLE);
+        }
+        if (type == 1) {
+            setTitle("ADD TO RECIPE");
+            viewBinder.btnSave.setText("SURE");
+            viewBinder.btnDate.setVisibility(View.GONE);
+        }
+        if (type == 2) {
+            viewBinder.btnSave.setVisibility(View.GONE);
+            viewBinder.btnDate.setVisibility(View.GONE);
+            viewBinder.btnDelete.setVisibility(View.GONE);
+            viewBinder.llLocation.setVisibility(View.GONE);
+            viewBinder.etDescription.setEnabled(false);
+            viewBinder.etCategory.setEnabled(false);
+            viewBinder.etLocation.setEnabled(false);
+            viewBinder.etUnitCost.setEnabled(false);
+            viewBinder.etCount.setEnabled(false);
+            setTitle("DETAILS");
         }
 
     }
