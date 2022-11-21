@@ -5,22 +5,17 @@ import com.google.firebase.firestore.DocumentId;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 
 public class Ingredient implements Serializable {
     public int count;
-    @DocumentId
-    public String id;
     public String description;
     public String unit;
     public String category;
     public String location;
     public String time;
 
-
-    /**
-     * Build a hash map
-     * @return The HashMap of the string object
-     */
     public Map<String, Object> toMap() {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put("description", description);
@@ -31,4 +26,13 @@ public class Ingredient implements Serializable {
         stringObjectHashMap.put("time", time);
         return stringObjectHashMap;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ingredient that = (Ingredient) o;
+        return description.equals(that.description);
+    }
+
 }
