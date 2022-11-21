@@ -3,8 +3,6 @@ package com.example.myhw.recipes;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
-import com.example.myhw.FirebaseUtil;
-import com.example.myhw.Ingredient.Ingredient;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.MainViewModel;
 import com.example.myhw.R;
 import com.example.myhw.base.BaseBindingFragment;
 import com.example.myhw.base.BindAdapter;
 import com.example.myhw.databinding.FragmentRecipesBinding;
 import com.example.myhw.databinding.ItemRecipesBinding;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 
@@ -74,16 +66,13 @@ public class RecipesFragment extends BaseBindingFragment<FragmentRecipesBinding>
 
     @Override
     protected void initListener() {
-
+        viewBinder.add.setOnClickListener(v -> startActivity(AddRecipeActivity.class));
     }
 
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add_recipes:
-                startActivity(AddRecipeActivity.class);
-                break;
             case R.id.menu_sort: {
                 showSortDialog();
             }

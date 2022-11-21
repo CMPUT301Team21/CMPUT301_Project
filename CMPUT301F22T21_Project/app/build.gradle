@@ -38,7 +38,18 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+//    androidTestImplementation('androidx.test.espresso:espresso-core:3.4.0'){
+//        exclude group: 'com.android.support', module: 'appcompat'
+//        exclude group: 'com.android.support', module: 'support-v4'
+//        exclude module: 'recyclerview-v7'
+//    }
+
+
+    // Espresso
+    def androidx_test_espresso = "3.1.0"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_test_espresso"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$androidx_test_espresso"
+
 
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
     // Declare the dependency for the Firebase Authentication library
@@ -52,21 +63,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
     annotationProcessor('com.github.bumptech.glide:compiler:4.13.2')
 
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test:rules:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:3.0.2') {
+//        exclude group: 'com.android.support', module: 'appcompat'
+//        exclude group: 'com.android.support', module: 'support-v4'
+//        exclude module: 'recyclerview-v7'
+//    }
 
-    implementation 'com.google.android.material:material:1.7.0'
+    androidTestImplementation('com.android.support.test.espresso:espresso-intents:2.2') {
+        // Necessary to avoid version conflicts
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
 
-    //Testing
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-
-    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.3.0'
 }

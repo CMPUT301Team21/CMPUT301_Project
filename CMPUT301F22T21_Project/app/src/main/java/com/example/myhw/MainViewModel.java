@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.myhw.Ingredient.Ingredient;
-import com.example.myhw.plan.AnotherIngredient;
+import com.example.myhw.helper.FirebaseUtil;
 import com.example.myhw.plan.Plan;
 import com.example.myhw.recipes.Recipes;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,69 +20,62 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-
-//9.每一次点到 shopping list，比较meal plan和storage 数量上的差值，meal plan 里的东西如果storage 没有就把它加到shopping list 更新shopping list
-//10. recepie 添加食物的时候，要现场添加新的事物信息（escription amount unit ingredient category）而不是跑到 ingredient storage
+import java.util.Map;
 
 
 public class MainViewModel extends ViewModel {
+    //仓库 LiveData对象
     private MutableLiveData<List<Ingredient>> ingredients = new MutableLiveData<>(new ArrayList<>());
+    //菜谱 LiveData对象
     private MutableLiveData<List<Recipes>> recipes = new MutableLiveData<>(new ArrayList<>());
+    //购物车LiveData对象
     private MutableLiveData<List<Ingredient>> shoppingList = new MutableLiveData<>(new ArrayList<>());
+    //计划LiveData对象
     private MutableLiveData<List<Plan>> plans = new MutableLiveData<>(new ArrayList<>());
+    //当前的计划LiveDate对象
+    private MutableLiveData<Plan> currentPlan = new MutableLiveData<>();
+    //当前购物车排序于
     private String shoppingListOrderBy = "description";
+    //当前菜谱排序于
     private String recipesOrderBy = "title";
+    //当前仓库排序于
+    private String ingredientOrderBy = "description";
 
     /**
-     * This decide the order of recipes.
-     * @param recipesOrderBy This is the order of the recipes
+     * 设置菜谱排序
+     *
+     * @param recipesOrderBy
      */
     public void setRecipesOrderBy(String recipesOrderBy) {
         this.recipesOrderBy = recipesOrderBy;
         refreshRecipe();
     }
-    /**
-     * This returns a list of ingredients
-     * @return
-     *      Return the ingredients
-     */
+
+
     public LiveData<List<Ingredient>> observerIngredients() {
         return ingredients;
     }
 
-    /**
-     * This returns the shopping list.
-     * @return
-     *      Return the shopping list
-     */
     public LiveData<List<Ingredient>> observerShoppingList() {
         return shoppingList;
     }
 
-    /**
-     * This returns the meal plan.
-     * @return
-     *      Return the meal plan
-     */
     public LiveData<List<Plan>> observerPlans() {
         return plans;
     }
 
-    /**
-     * This returns the recipes.
-     * @return
-     *      Return the recipes
-     */
     public LiveData<List<Recipes>> observerRecipes() {
         return recipes;
     }
 
+
     /**
-     * This decide the order of shopping list.
-     * @param orderBy This is the order of the shopping list.
+     * 更改购物车排序方式
+     *
+     * @param orderBy
      */
     public void changeShoppingListOrderBy(String orderBy) {
         shoppingListOrderBy = orderBy;
@@ -100,186 +93,182 @@ public class MainViewModel extends ViewModel {
     }
 
     /**
-     * This update the recipe order.
+     * 刷新菜谱方法
      */
     public void refreshRecipe() {
-        FirebaseUtil.getRecipesCollection().orderBy(recipesOrderBy, Query.Direction.ASCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<Recipes> recipesList = new ArrayList<>();
-                Log.d("TAG", "->: onSuccess");
-                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                for (DocumentSnapshot document : documents) {
-                    Recipes recipes = document.toObject(Recipes.class);
-                    Log.d("TAG", "->: " + recipes.id);
-                    recipesList.add(recipes);
-                }
-                recipes.setValue(recipesList);
+        FirebaseUtil.getRecipesCollection().orderBy(recipesOrderBy, Query.Direction.ASCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            List<Recipes> recipesList = new ArrayList<>();
+            Log.d("TAG", "->: onSuccess");
+            List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+            for (DocumentSnapshot document : documents) {
+                Recipes recipes = document.toObject(Recipes.class);
+                Log.d("TAG", "->: " + recipes.id);
+                recipesList.add(recipes);
             }
+            recipes.setValue(recipesList);
         });
     }
 
+
     /**
-     * This update the meal plan order.
+     * 计算购物策划方法
      */
-    public void refreshPlans() {
+    public void calculateShoppingCart() {
         FirebaseUtil.getPlanCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<Plan> preData = new ArrayList<>();
-                Log.d("TAG", "getPlanCollection->: onSuccess");
-                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                for (DocumentSnapshot document : documents) {
-                    Plan plan = document.toObject(Plan.class);
-                    Log.d("TAG", "getPlanCollection->: " + plan.id);
-                    preData.add(plan);
+                Map<String, Ingredient> shopCartMap = new HashMap<>();
+                List<Plan> planList = queryDocumentSnapshots.toObjects(Plan.class);
+                for (Plan plan : planList) {
+                    for (Recipes recipe : plan.recipes) {
+                        for (Ingredient ingredient : recipe.ingredients) {
+                            Ingredient preIngredient = shopCartMap.get(ingredient.description);
+                            if (preIngredient == null) {
+                                preIngredient = ingredient;
+                                preIngredient.count = preIngredient.count * recipe.numberOfServings;
+                                shopCartMap.put(ingredient.description, preIngredient);
+                            } else {
+                                preIngredient.count += ingredient.count * recipe.numberOfServings;
+                            }
+                        }
+                    }
                 }
-                plans.setValue(preData);
+
+                for (Plan plan : planList) {
+                    for (Ingredient ingredient : plan.ingredients) {
+                        Ingredient preIngredient = shopCartMap.get(ingredient.description);
+                        if (preIngredient == null) {
+                            preIngredient = ingredient;
+                            shopCartMap.put(ingredient.description, preIngredient);
+                        } else {
+                            preIngredient.count += ingredient.count;
+                        }
+                    }
+                }
+                for (Map.Entry<String, Ingredient> stringIngredientEntry : shopCartMap.entrySet()) {
+                    Log.d("MAPMAP", "MAP: " + stringIngredientEntry.getKey() + "--" + stringIngredientEntry.getValue().count);
+                }
+
+                FirebaseUtil.getIngredientCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Ingredient> shoppingListPreDate = new ArrayList<>();
+                        List<Ingredient> IngredientList = queryDocumentSnapshots.toObjects(Ingredient.class);
+                        for (Ingredient ingredient : IngredientList) {
+                            //如果获取出的食物不为null 说明计划中存在 则要进行购买数量计算
+                            //如果仓库中的数量大于计划中的数量则说明不需要购买 否则计算数量
+
+                            Ingredient preIngredient = shopCartMap.get(ingredient.description);
+                            if (preIngredient != null) {
+                                Log.d("TAG", "onSuccess: " + ingredient.description);
+                                if (ingredient.count < preIngredient.count) {
+                                    ingredient.count = preIngredient.count - ingredient.count;
+                                    shoppingListPreDate.add(ingredient);
+                                }
+                                shopCartMap.remove(ingredient.description);
+                            }
+                        }
+                        for (Map.Entry<String, Ingredient> remaining : shopCartMap.entrySet()) {
+                            Log.d("TAG", "remaining: " + remaining.getValue().description);
+                            shoppingListPreDate.add(remaining.getValue());
+                        }
+                        shoppingList.setValue(shoppingListPreDate);
+                    }
+                });
+
             }
         });
+
+
     }
 
     /**
-     * This update the ingredient storage order.
+     * 设置仓库排序
+     *
+     * @param ingredientOrderBy
+     */
+    public void setIngredientOrderBy(String ingredientOrderBy) {
+        this.ingredientOrderBy = ingredientOrderBy;
+        refreshIngredients();
+    }
+
+    /**
+     * 刷新仓库列表
      */
     public void refreshIngredients() {
-        FirebaseUtil.getIngredientCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
+        FirebaseUtil.getIngredientCollection().orderBy(ingredientOrderBy).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<Ingredient> preData = new ArrayList<>();
-                List<Ingredient> shoppingListPreDate = new ArrayList<>();
                 List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
                 for (DocumentSnapshot document : documents) {
                     Ingredient ingredient = document.toObject(Ingredient.class);
-                    Log.d("TAG", "->: " + ingredient.id);
                     preData.add(ingredient);
-                    if (ingredient.count < 0) {
-                        shoppingListPreDate.add(ingredient);
-                    }
                 }
+                Log.d("TAG", "onSuccess: " + preData.size());
                 ingredients.setValue(preData);
-                shoppingListPreDate.sort((o1, o2) -> {
-                    if (shoppingListOrderBy.equals("description")) {
-                        return Collator.getInstance(Locale.CHINESE).compare(o1.description, o2.description);
-                    } else {
-                        return Collator.getInstance(Locale.CHINESE).compare(o1.category, o2.category);
-                    }
-                });
-                shoppingList.setValue(shoppingListPreDate);
+
             }
         });
     }
 
-    /**
-     * This change the count of ingredient in storage.
-     * @param id This is the id of the count attribute of the ingredient
-     */
-    public void changeCount(String id, int count) {
-        List<Ingredient> value = ingredients.getValue();
-        for (Ingredient ingredient : value) {
-            if (ingredient.id.equals(id)) {
-                ingredient.count -= count;
-                FirebaseUtil.getIngredientCollection().document(id).update(ingredient.toMap()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        refreshIngredients();
-                    }
-                });
-                break;
-            }
-        }
-    }
 
     /**
-     * This add a new plan in the meal plan.
-     * @param ingredient This is the target ingredient
-     * @param count This is the count of the ingredient
-     */
-    public void addPlan(Ingredient ingredient, int count) {
-        Plan plan = new Plan();
-        plan.list = new ArrayList<>();
-        AnotherIngredient anotherIngredient = new AnotherIngredient();
-        anotherIngredient.init(ingredient);
-        anotherIngredient.count = count;
-        plan.list.add(anotherIngredient);
-        addPlan(plan);
-    }
-
-    /**
-     * This update the added meal plan into the database.
-     * @param plan This is the target meal plan
+     * 添加或更新某个计划
+     *
+     * @param plan
      */
     public void addPlan(Plan plan) {
-        FirebaseUtil.getPlanCollection().add(plan).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        FirebaseUtil.getPlanCollection()
+                .document(plan.time)
+                .set(plan).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        currentPlan.setValue(plan);
+                    }
+                });
+    }
+
+
+    /**
+     * 根据时间获取计划
+     *
+     * @param time
+     */
+    public void getPlanByDate(String time) {
+        FirebaseUtil.getPlanCollection().document(time).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentReference documentReference) {
-                refreshPlans();
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                currentPlan.setValue(documentSnapshot.toObject(Plan.class));
             }
         });
     }
 
     /**
-     * Update the meal plan
-     * @param ingredient Target ingredient
-     * @param plan Target meal plan
-     * @param count Target count
+     * 获取当前的计划对象
+     *
+     * @return
      */
-    public void updatePlan(Ingredient ingredient, Plan plan, int count) {
-        AnotherIngredient existsIngredient = null;
-        for (AnotherIngredient anotherIngredient : plan.list) {
-            if (anotherIngredient.ingredientId.equals(ingredient.id)) {
-                existsIngredient = anotherIngredient;
-                break;
-            }
-        }
-        if (existsIngredient != null) {
-            existsIngredient.count += count;
-        } else {
-            existsIngredient = new AnotherIngredient();
-            existsIngredient.init(ingredient);
-            existsIngredient.count = count;
-            plan.list.add(existsIngredient);
-        }
-        updatePlan(plan);
+    public Plan getCurrentPlan() {
+        return currentPlan.getValue();
     }
 
     /**
-     * Update the meal plan
-     * @param plan The provided plan
+     * 获取当前计划的LiveData对象
+     *
+     * @return
      */
-    public void updatePlan(Plan plan) {
-        FirebaseUtil.getPlanCollection()
-                .document(plan.id)
-                .update(plan.toMap())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        refreshPlans();
-                    }
-                });
+    public MutableLiveData<Plan> getLivePlan() {
+        return currentPlan;
     }
 
-    /**
-     * Change the count of the ingredient
-     * @param recipesIngredients The provided ingredient in recipes
-     */
-    public void changeCount(List<AnotherIngredient> recipesIngredients) {
-//        for (计划 计划item: 计划List){
-//            for (食物 食物item: 计划Item.食物List){
-//                for (食物 仓库食物Item:仓库List){
-//
-//                }
-//            }
-//        }
-
-        List<Ingredient> value = ingredients.getValue();
-        for (Ingredient ingredient : value) {
-            for (AnotherIngredient recipesIngredient : recipesIngredients) {
-                if (ingredient.id.equals(recipesIngredient.ingredientId)) {
-                    changeCount(ingredient.id, recipesIngredient.count);
-                }
+    public void deletePlanByTime(String time) {
+        FirebaseUtil.getPlanCollection().document(time).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                currentPlan.setValue(null);
             }
-        }
+        });
     }
 }

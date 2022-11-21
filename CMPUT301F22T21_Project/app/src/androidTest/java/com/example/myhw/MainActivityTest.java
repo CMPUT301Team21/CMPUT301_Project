@@ -1,21 +1,46 @@
 package com.example.myhw;
 
 
-
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static android.support.test.espresso.intent.Intents.intending;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 
+import static org.hamcrest.Matchers.allOf;
 
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.test.espresso.intent.Intents;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
+
+import androidx.activity.result.ActivityResult;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.internal.util.Checks;
 
+import com.example.myhw.Ingredient.Ingredient;
+
+import org.hamcrest.Description;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +51,18 @@ import java.util.regex.Matcher;
  * THE TEST CASES ARE NOT ENTIRELY DONE, FACE DIFFUTIUES OF CLICKING ITEM IN LIST,
  * AND THE SORT BUTTON
  */
+
+
+import androidx.test.espresso.action.ViewActions.*;
+import androidx.test.espresso.assertion.ViewAssertions.*;
+import androidx.test.espresso.contrib.RecyclerViewActions.*;
+import androidx.test.espresso.matcher.ViewMatchers.*;
+
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class MainActivityTest {
+
+
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
@@ -38,7 +72,7 @@ public class MainActivityTest {
     @Test
     public void testAddIngredient(){
         onView(withId(R.id.ingredient)).perform(click());
-        onView(withId(R.id.menu_add_ingredient)).perform(click()); //click add button
+        onView(withId(R.id.add)).perform(click()); //click add button
 
         onView(withId(R.id.et_description)).perform(ViewActions.typeText("tomato for test"));
         onView(withId(R.id.et_category)).perform(ViewActions.typeText("fruit"));
@@ -52,50 +86,73 @@ public class MainActivityTest {
 
     }
 
-//    @Test
-//    public void testAppName() {
-//        onView(withText("CMPUT-301-CustomList-Thursday")).check(matches(isDisplayed())); //Check the name on the screen
-//    }
-
     @Test
     public void testDeleteIngredient(){
+        //test delete a ingredient by first add a ingredient
         testAddIngredient();
+//        onView(withId(R.id.ingredient)).perform(click());
+        onView(allOf(ViewMatchers.withId(R.id.rv_data), isDisplayed()))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));//delete the first item in list
+        onView((withId(R.id.btn_delete))).perform(click());
+    }
+
+
+    @Test
+    public void testIngredientStorageName() {
         onView(withId(R.id.ingredient)).perform(click());
-//
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-//        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.actionOnItem(withText("specific string"), click()));
-
-
-
-//        onView(withRecyclerView(R.id.scroll_view).atPosition(3)).perform(click());
-        onView(withId(R.id.btn_delete)).perform(click());
+        onView(withText("INGREDIENT STORAGE")).check(matches(isDisplayed())); //Check the name on the screen
     }
 
     @Test
-    public void testAddMealPlan1(){
+    public void testMealPlanName() {
         onView(withId(R.id.mealPlan)).perform(click());
-        onView(withId(R.id.menu_add_plan)).perform(click());
+        onView(withText("MEAL PLAN")).check(matches(isDisplayed())); //Check the name on the screen
+    }
+
+    @Test
+    public void testRecipesName() {
+        onView(withId(R.id.recipes)).perform(click());
+        onView(withText("RECIPES")).check(matches(isDisplayed())); //Check the name on the screen
+    }
+
+    @Test
+    public void testShoppingListName() {
+        onView(withId(R.id.shoppingList)).perform(click());
+        onView(withText("SHOPPING LIST")).check(matches(isDisplayed())); //Check the name on the screen
+    }
+
+
+    @Test
+    public void testAddMealPlanFromIngredient(){
+        // test add meal plan from ingredient staorage
+        //first make sure there is something the ingredient staorage
+        onView(withId(R.id.mealPlan)).perform(click());
+        onView((withId(R.id.title))).perform(click());//select a date
+        onView(withId(android.R.id.button1)).perform(click());//press ok on the dialog
+        onView(allOf(ViewMatchers.withId(R.id.add), isDisplayed())).perform(click());//add
         onView(withText("Add from ingredient")).perform(click());
+
+        onView(allOf(ViewMatchers.withId(R.id.rv_data), isDisplayed()))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));//first item in list
+        //use the default value 10 as input count
         onView(withId(android.R.id.button1)).perform(click());
-//        onView(withText()).atPosition(0).perform(click());
 
 
 
 
     }
-
+//
     @Test
-    public void testAddMealPlan2(){
+    public void testAddMealPlanFromRecipe(){
         onView(withId(R.id.mealPlan)).perform(click());
-        onView(withId(R.id.menu_add_plan)).perform(click());
+        onView((withId(R.id.title))).perform(click());//select a date
+        onView(withId(android.R.id.button1)).perform(click());//press ok on the dialog
+        //now we have select current date
+        onView(allOf(ViewMatchers.withId(R.id.add), isDisplayed())).perform(click());//add
         onView(withText("Add from recipe")).perform(click());
-        onView(withId(android.R.id.button1)).perform(click());
-//        onView(withText()).atPosition(0).perform(click());
+
+        onView(allOf(ViewMatchers.withId(R.id.rv_data), isDisplayed()))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));//first item in list
 
 
 
@@ -106,13 +163,15 @@ public class MainActivityTest {
     public void testAddRecipe(){
         //pick ingredient
         onView(withId(R.id.recipes)).perform(click());
-        onView(withId(R.id.menu_add_recipes)).perform(click());
+        onView(allOf(ViewMatchers.withId(R.id.add), isDisplayed())).perform(click());
         onView(withId(R.id.et_preparation_time)).perform(ViewActions.typeText("30"));
         onView(withId(R.id.et_number)).perform(ViewActions.typeText("1"));
         onView(withId(R.id.et_category)).perform(ViewActions.typeText("dinner"));
         onView(withId(R.id.et_comments)).perform(ViewActions.typeText("dinner for tonight"));
         onView(withId(R.id.et_title)).perform(ViewActions.typeText("meet ball"));
-        //not yet sure how to take a picture here, skip this part
+        onView(allOf(ViewMatchers.withId(R.id.iv_image), isDisplayed())).perform(click());
+        onView(withText("Camera")).perform(click());
+        //not yet sure how to take a picture here, so must do it manually to give permission and take a picture
         Espresso.closeSoftKeyboard();//close key board
         onView(withId(R.id.btn_add_ingredient)).perform(click());
         //pick an ingredient
@@ -124,17 +183,67 @@ public class MainActivityTest {
     public void testRecipeSort(){
 
         onView(withId(R.id.recipes)).perform(click());
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 //        onView(withId(R.id.menu_edit)).perform(click());
-        onView(withId(R.id.menu_sort)).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by title")).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by time")).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by number")).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by category")).perform(click());
 
 
 
     }
+
+
+    @Test
+    public void testShoppingListSort(){
+
+        onView(withId(R.id.recipes)).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by description")).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by category")).perform(click());
+
+
+    }
+
+    @Test
+    public void testIngredientStorageSort(){
+
+        onView(withId(R.id.recipes)).perform(click());
+
+//        Espresso.openContextualActionModeOverflowMenu();
+//        onView(withText("SORT")).perform(click());
+//        onView(allOf(ViewMatchers.withText("Sort by description"), isDisplayed())).perform(click());
+//
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by category")).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by best before date")).perform(click());
+        Espresso.openContextualActionModeOverflowMenu();
+        onView(withText("SORT")).perform(click());
+        onView(withText("Sort by location")).perform(click());
+
+
+    }
+
+
 
     @Test
     public void testShoppingList(){
@@ -145,24 +254,9 @@ public class MainActivityTest {
 
     }
 
-    @Test
-    public void testShoppingListSort1(){
-        onView(withId(R.id.shoppingList)).perform(click());
-        //check the list item is matched,
-        onView(withId(R.id.menu_sort_shopping)).perform(click());
-        onView(withText("description")).perform(click());
-    }
-
-    @Test
-    public void testShoppingListSort2(){
-        onView(withId(R.id.shoppingList)).perform(click());
-        //check the list item is matched,
-        onView(withId(R.id.menu_sort_shopping)).perform(click());
-        onView(withText("category")).perform(click());
-    }
-
 
 
 
 
 }
+
