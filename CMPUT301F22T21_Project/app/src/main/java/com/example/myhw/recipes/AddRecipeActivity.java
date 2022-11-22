@@ -197,7 +197,7 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
                 new AlertDialog.Builder(AddRecipeActivity.this)
                         .setTitle("Notice")
                         .setMessage("Are you sure you want to delete this data")
-                        .setNegativeButton("SURE", (dialog, which) -> {
+                        .setNegativeButton("CONFIRM", (dialog, which) -> {
                             adapter.getData().remove(viewHolder.getAdapterPosition());
                             adapter.notifyDataSetChanged();
                         }).setCancelable(false)

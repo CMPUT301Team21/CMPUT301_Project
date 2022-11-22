@@ -22,8 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.WildcardType;
-
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class MainActivityTest {
@@ -60,7 +58,7 @@ public class MainActivityTest {
 //        onView(withId(R.id.ingredient)).perform(click());
         onView(allOf(ViewMatchers.withId(R.id.rv_data), isDisplayed()))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));//delete the first item in list
-        onView((withId(R.id.btn_delete))).perform(click());
+        onView(allOf(ViewMatchers.withId(R.id.btn_delete), isDisplayed())).perform(click());
     }
 
 

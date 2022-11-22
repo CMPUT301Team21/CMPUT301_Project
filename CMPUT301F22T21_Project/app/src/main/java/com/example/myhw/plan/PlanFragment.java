@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.myhw.Ingredient.Ingredient;
 import com.example.myhw.Ingredient.SelectIngredientActivity;
 import com.example.myhw.MainViewModel;
+import com.example.myhw.R;
 import com.example.myhw.base.BaseBindingFragment;
 import com.example.myhw.base.PlanAdapter;
 import com.example.myhw.databinding.FragmentPlanBinding;
@@ -32,7 +33,7 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
 
     private MainViewModel viewModel;
     private PlanAdapter adapter = new PlanAdapter();
-
+    private EditText scale_factor;
     @Override
     protected void initData() {
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
@@ -130,7 +131,11 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                         @Override
                         public void result(int input) {
                             Ingredient ingredient = (Ingredient) data.getSerializableExtra("ingredient");
-                            ingredient.count = input;
+                            scale_factor = getActivity().findViewById(R.id.edit_scale_factor);
+                            int factor = Integer.parseInt(scale_factor.getText().toString());
+
+                            ingredient.count = input*factor;
+
                             Plan plan = viewModel.getCurrentPlan();
                             if (plan == null) {
                                 plan = new Plan();
@@ -139,8 +144,14 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                                 plan.recipes = new ArrayList<>();
                                 plan.time = time;
                             } else {
-                                Ingredient oldIngredient = plan.ingredients.get(plan.ingredients.indexOf(ingredient));
-                                oldIngredient.count += ingredient.count;
+                                int index = plan.ingredients.indexOf(ingredient);
+                                if (index != -1) {
+                                    Ingredient oldIngredient = plan.ingredients.get(index);
+                                    oldIngredient.count += ingredient.count;
+                                } else {
+                                    plan.ingredients.add(ingredient);
+                                }
+
                             }
                             viewModel.addPlan(plan);
                         }
@@ -154,10 +165,18 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                         plan = new Plan();
                         plan.ingredients = new ArrayList<>();
                         plan.recipes = new ArrayList<>();
-                        plan.recipes.add(recipes);
+                        scale_factor = getActivity().findViewById(R.id.edit_scale_factor);
+                        int factor = Integer.parseInt(scale_factor.getText().toString());
+                        for (int i = 0; i < factor; i++){
+                            plan.recipes.add(recipes);
+                        }
                         plan.time = time;
                     } else {
-                        plan.recipes.add(recipes);
+                        scale_factor = getActivity().findViewById(R.id.edit_scale_factor);
+                        int factor = Integer.parseInt(scale_factor.getText().toString());
+                        for (int i = 0; i < factor; i++){
+                            plan.recipes.add(recipes);
+                        }
                     }
                     viewModel.addPlan(plan);
                 }
@@ -168,11 +187,8 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
 
     private void showAdd2PlanDialog(OnInputListener listener) {
         EditText editText = new EditText(getContext());
-        editText.setHint("Input Count");
+        editText.setHint("Input Count (each serving): ");
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            editText.setAutofillHints("10");
-        }
         new AlertDialog.Builder(getContext())
                 .setTitle("Please enter the count")
                 .setView(editText)
@@ -194,6 +210,9 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
         EditText editText = new EditText(getContext());
         editText.setHint("Input Days");
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            editText.setAutofillHints("10");
+        }
         new AlertDialog.Builder(getContext())
                 .setTitle("Please enter the days")
                 .setView(editText)

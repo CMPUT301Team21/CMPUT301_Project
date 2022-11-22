@@ -47,7 +47,7 @@ public class ShoppingListFragment extends BaseBindingFragment<FragmentShoppingLi
             itemIngredientBinding.tvDescription.setText("Description:" + ingredient.description);
             itemIngredientBinding.tvLocation.setText("Location:" + ingredient.location);
             itemIngredientBinding.tvLocation.setVisibility(View.GONE);
-            itemIngredientBinding.tvBastBeforeDate.setText("Bast Before Date:" + ingredient.time);
+            itemIngredientBinding.tvBastBeforeDate.setText("Best Before Date:" + ingredient.time);
             itemIngredientBinding.tvBastBeforeDate.setVisibility(View.GONE);
             if (currentIndex == position) {
                 itemIngredientBinding.getRoot().setBackgroundColor(Color.GRAY);

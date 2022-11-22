@@ -67,7 +67,7 @@ public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDe
         viewBinder.tvTitle.setText("Title:" + recipes.title);
         viewBinder.tvPreparationTime.setText("Preparation time:" + recipes.preparationTime);
         viewBinder.tvNumber.setText("Number of serving:" + recipes.numberOfServings);
-        viewBinder.tvComments.setText("Comments:" + recipes.comments);
+        viewBinder.tvComments.setText("Common:" + recipes.comments);
         viewBinder.tvCategory.setText("Recipe category:" + recipes.category);
         FirebaseUtil.loadImage(recipes.photo, viewBinder.ivImage);
     }

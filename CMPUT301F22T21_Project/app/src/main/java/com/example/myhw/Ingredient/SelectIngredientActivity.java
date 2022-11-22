@@ -27,7 +27,7 @@ public class SelectIngredientActivity extends BaseBindingActivity<ActivitySelect
         @Override
         public void bind(ItemIngredientBinding itemIngredientBinding, Ingredient ingredient, int position) {
             itemIngredientBinding.tvCategory.setText("Category:" + ingredient.category);
-            itemIngredientBinding.tvBastBeforeDate.setText("Bast Before Date:" + ingredient.time);
+            itemIngredientBinding.tvBastBeforeDate.setText("Best Before Date:" + ingredient.time);
             itemIngredientBinding.tvCount.setText("Count:" + (Math.max(ingredient.count, 0)));
             itemIngredientBinding.tvUnitCost.setText("Unit:" + ingredient.unit);
             itemIngredientBinding.tvLocation.setText("Location:" + ingredient.location);
