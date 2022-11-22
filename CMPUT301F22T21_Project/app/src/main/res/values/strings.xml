@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">MyHW</string>
-    <string-array name="orderBy">
-        <item>description</item>
-        <item>category</item>
-    </string-array>
-</resources>
