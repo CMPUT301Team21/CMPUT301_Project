@@ -88,7 +88,7 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
     private void showSortDialog() {
         new AlertDialog.Builder(getContext()).setItems(new CharSequence[]{
                 "Sort by description",
-                "Sort by base before date",
+                "Sort by best before date",
                 "Sort by location",
                 "Sort by category"
         }, new DialogInterface.OnClickListener() {

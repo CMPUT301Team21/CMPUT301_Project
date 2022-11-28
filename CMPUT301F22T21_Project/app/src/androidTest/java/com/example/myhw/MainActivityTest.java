@@ -148,12 +148,6 @@ public class MainActivityTest {
     public void testRecipeSort(){
 
         onView(withId(R.id.recipes)).perform(click());
-//        try {
-//            Thread.sleep(5000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        onView(withId(R.id.menu_edit)).perform(click());
         Espresso.openContextualActionModeOverflowMenu();
         onView(withText("SORT")).perform(click());
         onView(withText("Sort by title")).perform(click());
@@ -175,7 +169,7 @@ public class MainActivityTest {
     @Test
     public void testShoppingListSort(){
 
-        onView(withId(R.id.recipes)).perform(click());
+        onView(withId(R.id.shoppingList)).perform(click());
         Espresso.openContextualActionModeOverflowMenu();
         onView(withText("SORT")).perform(click());
         onView(withText("Sort by description")).perform(click());
@@ -189,12 +183,7 @@ public class MainActivityTest {
     @Test
     public void testIngredientStorageSort(){
 
-        onView(withId(R.id.recipes)).perform(click());
-
-//        Espresso.openContextualActionModeOverflowMenu();
-//        onView(withText("SORT")).perform(click());
-//        onView(allOf(ViewMatchers.withText("Sort by description"), isDisplayed())).perform(click());
-//
+        onView(withId(R.id.ingredient)).perform(click());
         Espresso.openContextualActionModeOverflowMenu();
         onView(withText("SORT")).perform(click());
         onView(withText("Sort by category")).perform(click());
@@ -213,9 +202,6 @@ public class MainActivityTest {
     @Test
     public void testShoppingList(){
         onView(withId(R.id.shoppingList)).perform(click());
-        //check the list item is matched,
-//        onView(withText("banana")).perform(isDisplayed());
-
 
     }
 
