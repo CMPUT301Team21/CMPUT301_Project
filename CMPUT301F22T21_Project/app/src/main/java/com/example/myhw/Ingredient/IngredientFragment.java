@@ -52,6 +52,9 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
         }
     };
 
+    /**
+     * Initialize data
+     */
     @Override
     protected void initData() {
         viewBinder.rvData.setAdapter(adapter);
@@ -69,7 +72,11 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
         viewBinder.add.setOnClickListener(v -> startActivity(AddIngredientActivity.class));
     }
 
-
+    /**
+     * detect if item selected
+     * @param item  This is the item in the menu
+     * @return The selected item
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_sort_ingredient) {
@@ -105,6 +112,9 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
         }).show();
     }
 
+    /**
+     * update when back
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -112,6 +122,9 @@ public class IngredientFragment extends BaseBindingFragment<FragmentIngredientBi
     }
 
 
+    /**
+     * Initialize listener
+     */
     @Override
     protected void initListener() {
     }

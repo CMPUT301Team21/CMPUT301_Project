@@ -18,6 +18,12 @@ import java.util.List;
 
 public class SelectIngredientActivity extends BaseBindingActivity<ActivitySelectIngredientBinding> {
     private BindAdapter<ItemIngredientBinding, Ingredient> adapter = new BindAdapter<ItemIngredientBinding, Ingredient>() {
+
+        /**
+         * Create a listView holder
+         * @param parent  This is the parent of the type ViewGroup
+         * @return The inflated fragment
+         */
         @Override
         public ItemIngredientBinding createHolder(ViewGroup parent) {
             return ItemIngredientBinding.inflate(getLayoutInflater(), parent, false);
@@ -42,6 +48,9 @@ public class SelectIngredientActivity extends BaseBindingActivity<ActivitySelect
         }
     };
 
+    /**
+     * Initialize listener
+     */
     @Override
     protected void initListener() {
         viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +63,9 @@ public class SelectIngredientActivity extends BaseBindingActivity<ActivitySelect
 
     private MainViewModel viewModel;
 
+    /**
+     * Initialize data
+     */
     @Override
     protected void initData() {
         setTitle("SELECT AN INGREDIENT");

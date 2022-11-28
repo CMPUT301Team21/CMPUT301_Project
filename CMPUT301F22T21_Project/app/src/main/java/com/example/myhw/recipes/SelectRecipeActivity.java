@@ -44,6 +44,9 @@ public class SelectRecipeActivity extends BaseBindingActivity<ActivitySelectReci
         }
     };
 
+    /**
+     * Initialize listener
+     */
     @Override
     protected void initListener() {
         viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +67,9 @@ public class SelectRecipeActivity extends BaseBindingActivity<ActivitySelectReci
         viewModel.refreshRecipe();
     }
 
+    /**
+     * Initialize data
+     */
     @Override
     protected void initData() {
         setTitle("CHOOSE BY RECIPE");

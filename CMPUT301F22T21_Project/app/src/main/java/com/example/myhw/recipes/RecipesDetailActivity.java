@@ -18,6 +18,9 @@ import com.example.myhw.databinding.ActivityRecipesDetailBinding;
 import com.example.myhw.databinding.ItemRecipeIngredient1Binding;
 
 public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDetailBinding> {
+    /**
+     * Initialize Adapter
+     */
     private BindAdapter<ItemRecipeIngredient1Binding, Ingredient> adapter = new BindAdapter<ItemRecipeIngredient1Binding, Ingredient>() {
         @Override
         public ItemRecipeIngredient1Binding createHolder(ViewGroup parent) {
@@ -42,6 +45,9 @@ public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDe
         }
     };
 
+    /**
+     * Initialization
+     */
     @Override
     protected void initListener() {
         viewBinder.btnBack.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +61,9 @@ public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDe
     private Recipes recipes;
     private int type;
 
+    /**
+     * Initialize data
+     */
     @SuppressLint("SetTextI18n")
     @Override
     protected void initData() {
@@ -72,6 +81,11 @@ public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDe
         FirebaseUtil.loadImage(recipes.photo, viewBinder.ivImage);
     }
 
+    /**
+     * Display menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (type==0){
@@ -81,6 +95,11 @@ public class RecipesDetailActivity extends BaseBindingActivity<ActivityRecipesDe
         return true;
     }
 
+    /**
+     * Detect selected item
+     * @param item menu
+     * @return selected item
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         startActivity(new Intent(this, AddRecipeActivity.class).putExtra("recipes", recipes));

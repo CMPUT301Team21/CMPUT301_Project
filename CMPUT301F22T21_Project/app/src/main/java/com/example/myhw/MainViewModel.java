@@ -47,37 +47,54 @@ public class MainViewModel extends ViewModel {
     private String ingredientOrderBy = "description";
 
     /**
-     * 设置菜谱排序
-     *
-     * @param recipesOrderBy
+     * This decide the order of recipes.
+     * @param recipesOrderBy This is the order of the recipes
      */
     public void setRecipesOrderBy(String recipesOrderBy) {
         this.recipesOrderBy = recipesOrderBy;
         refreshRecipe();
     }
 
-
+    /**
+     * This returns a list of ingredients
+     * @return
+     *      Return the ingredients
+     */
     public LiveData<List<Ingredient>> observerIngredients() {
         return ingredients;
     }
 
+    /**
+     * This returns the shopping list.
+     * @return
+     *      Return the shopping list
+     */
     public LiveData<List<Ingredient>> observerShoppingList() {
         return shoppingList;
     }
 
+    /**
+     * This returns the meal plan.
+     * @return
+     *      Return the meal plan
+     */
     public LiveData<List<Plan>> observerPlans() {
         return plans;
     }
 
+    /**
+     * This returns the recipes.
+     * @return
+     *      Return the recipes
+     */
     public LiveData<List<Recipes>> observerRecipes() {
         return recipes;
     }
 
 
     /**
-     * 更改购物车排序方式
-     *
-     * @param orderBy
+     * This decide the order of shopping list.
+     * @param orderBy This is the order of the shopping list.
      */
     public void changeShoppingListOrderBy(String orderBy) {
         shoppingListOrderBy = orderBy;
@@ -95,7 +112,7 @@ public class MainViewModel extends ViewModel {
     }
 
     /**
-     * 刷新菜谱方法
+     * This update the recipe order.
      */
     public void refreshRecipe() {
         FirebaseUtil.getRecipesCollection().orderBy(recipesOrderBy, Query.Direction.ASCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -113,7 +130,7 @@ public class MainViewModel extends ViewModel {
 
 
     /**
-     * 计算购物策划方法
+     * calculate the shopping cart
      */
     public void calculateShoppingCart() {
         FirebaseUtil.getPlanCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -186,7 +203,7 @@ public class MainViewModel extends ViewModel {
     }
 
     /**
-     * 设置仓库排序
+     * set the ingredient storage order
      *
      * @param ingredientOrderBy
      */
@@ -196,7 +213,7 @@ public class MainViewModel extends ViewModel {
     }
 
     /**
-     * 刷新仓库列表
+     * update the ingredient storage list
      */
     public void refreshIngredients() {
         FirebaseUtil.getIngredientCollection().orderBy(ingredientOrderBy).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -217,7 +234,7 @@ public class MainViewModel extends ViewModel {
 
 
     /**
-     * 添加或更新某个计划
+     * add or update one plan
      *
      * @param plan
      */
@@ -234,7 +251,7 @@ public class MainViewModel extends ViewModel {
 
 
     /**
-     * 根据时间获取计划
+     * get the plan according to time
      *
      * @param time
      */
@@ -248,23 +265,28 @@ public class MainViewModel extends ViewModel {
     }
 
     /**
-     * 获取当前的计划对象
+     * get current plane
      *
-     * @return
+     * @return plan
      */
     public Plan getCurrentPlan() {
         return currentPlan.getValue();
     }
 
     /**
-     * 获取当前计划的LiveData对象
+     * get the current plan's livedata
      *
-     * @return
+     * @return MutableLiveData
      */
     public MutableLiveData<Plan> getLivePlan() {
         return currentPlan;
     }
 
+    /**
+     * According to selected time to delete plan
+     *
+     * @param time
+     */
     public void deletePlanByTime(String time) {
         FirebaseUtil.getPlanCollection().document(time).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -274,6 +296,11 @@ public class MainViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Copy plan by given input
+     *
+     * @param input
+     */
     public void copyPlan(int input) {
         Plan value = currentPlan.getValue();
         for (int i = 1; i < input; i++) {
@@ -289,7 +316,11 @@ public class MainViewModel extends ViewModel {
         }
     }
 
-
+    /**
+     * get the selected day
+     *
+     * @return String
+     */
     private String getDay(int count) {
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.DATE, count);

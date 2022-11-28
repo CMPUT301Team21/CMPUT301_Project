@@ -25,6 +25,9 @@ public class RecipesFragment extends BaseBindingFragment<FragmentRecipesBinding>
 
     private MainViewModel viewModel;
 
+    /**
+     * Set Binding
+     */
     private BindAdapter<ItemRecipesBinding, Recipes> adapter = new BindAdapter<ItemRecipesBinding, Recipes>() {
         @Override
         public ItemRecipesBinding createHolder(ViewGroup parent) {
@@ -47,6 +50,9 @@ public class RecipesFragment extends BaseBindingFragment<FragmentRecipesBinding>
         }
     };
 
+    /**
+     * Initialize data
+     */
     @Override
     protected void initData() {
         viewBinder.rvData.setAdapter(adapter);
@@ -63,13 +69,19 @@ public class RecipesFragment extends BaseBindingFragment<FragmentRecipesBinding>
         viewModel.refreshRecipe();
     }
 
-
+    /**
+     * Initialize listener
+     */
     @Override
     protected void initListener() {
         viewBinder.add.setOnClickListener(v -> startActivity(AddRecipeActivity.class));
     }
 
-
+    /**
+     * Detect selected item
+     * @param item menu
+     * @return true
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -81,6 +93,9 @@ public class RecipesFragment extends BaseBindingFragment<FragmentRecipesBinding>
         return true;
     }
 
+    /**
+     * Display sorting menu
+     */
     private void showSortDialog() {
         new AlertDialog.Builder(getContext()).setItems(new CharSequence[]{
                 "Sort by title",
@@ -108,6 +123,9 @@ public class RecipesFragment extends BaseBindingFragment<FragmentRecipesBinding>
         }).show();
     }
 
+    /**
+     * Update when back to main
+     */
     @Override
     public void onResume() {
         super.onResume();

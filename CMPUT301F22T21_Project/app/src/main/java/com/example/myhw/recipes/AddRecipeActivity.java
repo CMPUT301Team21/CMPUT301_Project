@@ -45,6 +45,9 @@ import java.util.Map;
 public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBinding> {
     private String imageDocId = "";
     private Uri photoUri;
+    /**
+     * Set Binding
+     */
     private BindAdapter<ItemRecipeIngredientBinding, Ingredient> adapter = new BindAdapter<ItemRecipeIngredientBinding, Ingredient>() {
         @Override
         public ItemRecipeIngredientBinding createHolder(ViewGroup parent) {
@@ -58,6 +61,9 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
         }
     };
 
+    /**
+     * Initialization
+     */
     @Override
     protected void initListener() {
         viewBinder.btnDelete.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +167,9 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
 
     private Recipes recipes;
 
+    /**
+     * Initialize data
+     */
     @SuppressLint("SetTextI18n")
     @Override
     protected void initData() {
@@ -207,6 +216,12 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
         itemTouchHelper.attachToRecyclerView(viewBinder.rvIngredient);
     }
 
+    /**
+     * Upload Image
+     * @param requestCode input
+     * @param resultCode output
+     * @param data information
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -246,6 +261,11 @@ public class AddRecipeActivity extends BaseBindingActivity<ActivityAddRecipeBind
         }
     }
 
+    /**
+     * Upload Image
+     * @param data information
+     * @throws FileNotFoundException
+     */
     private void uploadImage(Uri data) throws FileNotFoundException {
         viewBinder.ivImage.setImageResource(R.drawable.ic_baseline_loop_24);
         String preImageDocId = System.currentTimeMillis() + "";

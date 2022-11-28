@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Build a hash map
+ */
 public class Plan {
     public String time;
     public List<Ingredient> ingredients;

@@ -34,6 +34,10 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
     private MainViewModel viewModel;
     private PlanAdapter adapter = new PlanAdapter();
     private EditText scale_factor;
+
+    /**
+     * Initialize data
+     */
     @Override
     protected void initData() {
         viewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
@@ -43,6 +47,9 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
     private String time = "";
     private Calendar instance = Calendar.getInstance();
 
+    /**
+     * Initialize listener
+     */
     @Override
     protected void initListener() {
         viewBinder.ivDelete.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +112,9 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
 
     }
 
-
+    /**
+     * Display adding option dialog
+     */
     private void showAddFunctionDialog() {
         new AlertDialog.Builder(requireActivity()).setItems(
                 new CharSequence[]{
@@ -120,7 +129,12 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                 }).show();
     }
 
-
+    /**
+     * Track item
+     * @param requestCode This is the requested code
+     * @param resultCode This is the result code
+     * @param data This is the target data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -185,6 +199,10 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
         }
     }
 
+    /**
+     * Prompt user to enter count
+     * @param listener This is the listener
+     */
     private void showAdd2PlanDialog(OnInputListener listener) {
         EditText editText = new EditText(getContext());
         editText.setHint("Input Count (each serving): ");
@@ -206,6 +224,10 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                 .show();
     }
 
+    /**
+     * display tips
+     * @param listener This is the listener
+     */
     private void showCopyDialog(OnInputListener listener) {
         EditText editText = new EditText(getContext());
         editText.setHint("Input Days");
@@ -230,6 +252,9 @@ public class PlanFragment extends BaseBindingFragment<FragmentPlanBinding> {
                 .show();
     }
 
+    /**
+     * Provide interface for listener
+     */
     private interface OnInputListener {
         void result(int input);
     }

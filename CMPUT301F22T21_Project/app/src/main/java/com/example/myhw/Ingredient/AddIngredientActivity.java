@@ -26,6 +26,9 @@ public class AddIngredientActivity extends BaseBindingActivity<ActivityAddIngred
     private String time = "";
     Calendar instance = Calendar.getInstance();
 
+    /**
+     * Initialize a listener
+     */
     @Override
     protected void initListener() {
         viewBinder.btnBack.setOnClickListener(v -> finish());
@@ -110,6 +113,10 @@ public class AddIngredientActivity extends BaseBindingActivity<ActivityAddIngred
     private int type;
 
     @SuppressLint("SetTextI18n")
+
+    /**
+     * Initialize a data
+     */
     @Override
     protected void initData() {
         type = getIntent().getIntExtra("type", 0);

@@ -24,10 +24,20 @@ import java.util.List;
 public class PlanAdapter extends RecyclerView.Adapter<BindHolder<?>> {
     List<Object> objects = new ArrayList<>();
 
+    /**
+     * This function returns the object in the list
+     * @return object
+     */
     public List<Object> getData() {
         return objects;
     }
 
+    /**
+     * This is a holder that stores bind. Helps to inflate
+     * @param parent
+     * @param viewType
+     * @return BindHolder
+     */
     @NonNull
     @Override
     public BindHolder<?> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,6 +49,11 @@ public class PlanAdapter extends RecyclerView.Adapter<BindHolder<?>> {
 
     }
 
+    /**
+     * Choose whether Ingredient or Recipe
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull BindHolder<?> holder, int position) {
         int itemViewType = getItemViewType(position);
@@ -50,6 +65,11 @@ public class PlanAdapter extends RecyclerView.Adapter<BindHolder<?>> {
         }
     }
 
+    /**
+     * Set information of Recipes
+     * @param itemPlanRecipesBinding Recipe view
+     * @param recipes Recipe
+     */
     private void bindRecipes(ItemPlanRecipesBinding itemPlanRecipesBinding, Recipes recipes) {
         itemPlanRecipesBinding.tvNumber.setText(recipes.numberOfServings + "");
         itemPlanRecipesBinding.tvTitle.setText(recipes.title);
@@ -72,6 +92,11 @@ public class PlanAdapter extends RecyclerView.Adapter<BindHolder<?>> {
         });
     }
 
+    /**
+     * Set information of Ingredient
+     * @param itemIngredientBinding Ingredient view
+     * @param ingredient Ingredient
+     */
     private void bindIngredient(ItemIngredientBinding itemIngredientBinding, Ingredient ingredient) {
         itemIngredientBinding.tvBastBeforeDate.setVisibility(View.GONE);
         itemIngredientBinding.tvCategory.setVisibility(View.GONE);
@@ -91,11 +116,20 @@ public class PlanAdapter extends RecyclerView.Adapter<BindHolder<?>> {
         });
     }
 
+    /**
+     * Return the number of items
+     * @return list size
+     */
     @Override
     public int getItemCount() {
         return objects.size();
     }
 
+    /**
+     * Return the type of view
+     * @param position Position of selected item
+     * @return Whether Ingredient or Recipe
+     */
     @Override
     public int getItemViewType(int position) {
         if (objects.get(position) instanceof Ingredient) {
