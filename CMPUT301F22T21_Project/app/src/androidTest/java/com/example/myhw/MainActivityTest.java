@@ -172,10 +172,10 @@ public class MainActivityTest {
         onView(withId(R.id.shoppingList)).perform(click());
         Espresso.openContextualActionModeOverflowMenu();
         onView(withText("SORT")).perform(click());
-        onView(withText("Sort by description")).perform(click());
+        onView(withText("description")).perform(click());
         Espresso.openContextualActionModeOverflowMenu();
         onView(withText("SORT")).perform(click());
-        onView(withText("Sort by category")).perform(click());
+        onView(withText("category")).perform(click());
 
 
     }
